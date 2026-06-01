@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-05-30 11:54:25 krylon>
+// Time-stamp: <2026-06-01 16:50:01 krylon>
 
 //go:build ignore
 
@@ -66,20 +66,24 @@ var candidates = map[string][]string{
 		"common",
 		"model/uname",
 		"model",
+		"database",
 	},
 	"lint": {
 		"logdomain",
 		"common",
 		"model/uname",
 		"model",
+		"database",
 	},
 	"nilaway": {
 		"common",
-		"database",
 		"model/uname",
 		"model",
+		"database",
 	},
-	"test": {},
+	"test": {
+		"collect",
+	},
 }
 
 // During the clean step, all files and folders that match any of these
