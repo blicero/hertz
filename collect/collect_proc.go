@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-01 11:46:59 krylon>
+// Time-stamp: <2026-06-01 14:37:23 krylon>
 
 //go:build linux || freebsd
 
@@ -50,8 +50,11 @@ func (p *Probe) getFreq() ([]int64, error) {
 
 	var info = freqPat.FindAllSubmatch(content, -1)
 
-	if info == nil {
-		return nil, nil
+	// if info == nil {
+	// 	return nil, nil
+	// }
+	if len(info) == 0 {
+		return p.getFreqAlt()
 	}
 
 	var rec = make([]int64, 0, len(info))
@@ -74,3 +77,36 @@ func (p *Probe) getFreq() ([]int64, error) {
 
 	return rec, nil
 } // func (p *Probe) getFreq() ([]int64, error)
+
+func (p *Probe) getFreqAlt() ([]int64, error) {
+	var (
+		err  error
+		raw  []byte
+		freq int64
+		n    = runtime.NumCPU()
+	)
+
+	// 1200000 !KHz
+
+	if raw, err = os.ReadFile(linuxSysfsFreq); err != nil {
+		p.log.Printf("[ERROR] Cannot open %s: %s\n",
+			linuxSysfsFreq,
+			err.Error())
+		return nil, err
+	} else if freq, err = strconv.ParseInt(string(raw[:len(raw)-1]), 10, 64); err != nil {
+		p.log.Printf("[ERROR] Cannot parse %s (%q): %s\n",
+			linuxSysfsFreq,
+			raw,
+			err.Error())
+		return nil, err
+	}
+
+	freq /= 1000
+	var data = make([]int64, n)
+
+	for i := range n {
+		data[i] = freq
+	}
+
+	return data, nil
+} // func (p *Probe) getFreqAlt() ([]int64, error)
