@@ -1,8 +1,8 @@
-// /home/krylon/go/src/github.com/blicero/newsroom/common/common.go
+// /home/krylon/go/src/github.com/blicero/hertz/common/common.go
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 03. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-05-30 11:42:11 krylon>
+// Time-stamp: <2026-06-01 14:00:26 krylon>
 
 package common
 
@@ -36,7 +36,7 @@ import (
 // application.
 const (
 	AppName                  = "Hertz"
-	Version                  = "0.0.1"
+	Version                  = "0.1.0"
 	Debug                    = true
 	TimestampFormatMinute    = "2006-01-02 15:04"
 	TimestampFormat          = "2006-01-02 15:04:05"
