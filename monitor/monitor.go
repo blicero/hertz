@@ -1,0 +1,83 @@
+// /home/krylon/go/src/github.com/blicero/hertz/monitor/monitor.go
+// -*- mode: go; coding: utf-8; -*-
+// Created on 02. 06. 2026 by Benjamin Walkenhorst
+// (c) 2026 Benjamin Walkenhorst
+// Time-stamp: <2026-06-02 12:10:30 krylon>
+
+// Package monitor implements the process of collecting and storing data
+// in a regular manner.
+package monitor
+
+import (
+	"log"
+	"sync/atomic"
+	"time"
+
+	"github.com/blicero/hertz/collect"
+	"github.com/blicero/hertz/common"
+	"github.com/blicero/hertz/database"
+	"github.com/blicero/hertz/logdomain"
+	"github.com/blicero/hertz/model"
+)
+
+// Monitor collects data and stores it to the database.
+type Monitor struct {
+	log      *log.Logger
+	db       *database.Database
+	probe    *collect.Probe
+	active   atomic.Bool
+	interval time.Duration
+}
+
+// Create creates a new Monitor that gathers new data every <tickSeconds> seconds.
+func Create(tickSeconds int64) (*Monitor, error) {
+	var (
+		err error
+		mon = &Monitor{
+			interval: time.Second * time.Duration(tickSeconds),
+		}
+	)
+
+	if mon.log, err = common.GetLogger(logdomain.Monitor); err != nil {
+		return nil, err
+	} else if mon.db, err = database.Open(common.DbPath); err != nil {
+		mon.log.Printf("[CRITICAL] Cannot open Database: %s\n",
+			err.Error())
+		return nil, err
+	} else if mon.probe, err = collect.New(); err != nil {
+		mon.log.Printf("[CRITICAL] Cannot open Probe: %s\n",
+			err.Error())
+		return nil, err
+	}
+
+	return mon, nil
+} // func Create() (*Monitor, error)
+
+// Start sets the Monitor to run.
+func (mon *Monitor) Start() {
+	mon.active.Store(true)
+	go mon.process()
+} // func (mon *Monitor) Start()
+
+func (mon *Monitor) process() {
+	var (
+		err    error
+		rec    *model.FreqRecord
+		ticker *time.Ticker
+	)
+
+	ticker = time.NewTicker(mon.interval)
+	defer ticker.Stop()
+
+	for mon.active.Load() {
+		if rec, err = mon.probe.Collect(); err != nil {
+			mon.log.Printf("[ERROR] Cannot gather data: %s\n",
+				err.Error())
+		} else if err = mon.db.RecordAdd(rec); err != nil {
+			mon.log.Printf("[ERROR] Failed to save record to DB: %s\n",
+				err.Error())
+		}
+
+		<-ticker.C
+	}
+} // func (mon *Monitor) process()
