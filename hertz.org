@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-02 12:26:21 krylon>
+# Time-stamp: <2026-06-02 13:37:08 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,26 +7,27 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [0/0]
+* Hertz [0/1]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-02 Di 12:26]
+   #+CAPTION: Clock summary at [2026-06-02 Di 13:37]
    | Headline                    | Time    |         |      |
    |-----------------------------+---------+---------+------|
-   | *Total time*                | *12:36* |         |      |
+   | *Total time*                | *13:42* |         |      |
    |-----------------------------+---------+---------+------|
-   | *Hertz [0/0]*               | *12:36* |         |      |
-   | \_  /Components [0/0]/      |         | /12:36/ |      |
+   | *Hertz [0/1]*               | *13:42* |         |      |
+   | \_  /Components [0/1]/      |         | /13:42/ |      |
    | \_    Data Model [0/0]      |         |         | 5:54 |
    | \_    Data Collection [0/0] |         |         | 3:15 |
-   | \_    Database [0/0]        |         |         | 2:56 |
+   | \_    Database [0/1]        |         |         | 2:56 |
    | \_    Monitor [0/0]         |         |         | 0:31 |
+   | \_    Main [0/0]            |         |         | 1:06 |
    #+END:
-** Components [0/0]
+** Components [0/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -51,7 +52,7 @@
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
-*** Database [0/0]
+*** Database [0/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -64,6 +65,7 @@
     On second thought, nah, SQLite is just *too good* to pass.
     ... On third thought, however, I think BuntDB sounds delicious. If only to
     cut down on compile times, as it is pure Go.
+**** TODO Export
 *** Monitor [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
@@ -73,6 +75,19 @@
     CLOCK: [2026-06-02 Di 11:55]--[2026-06-02 Di 12:26] =>  0:31
     :END:
     Monitor is my name for the part that regularly collects and saves data.
+*** Web UI [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: all
+    :END:
+*** Main [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: all
+    :END:
+    :LOGBOOK:
+    CLOCK: [2026-06-02 Di 12:31]--[2026-06-02 Di 13:37] =>  1:06
+    :END:
 ** Features [0/0]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
