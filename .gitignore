@@ -1,5 +1,5 @@
 # Binaries for programs and plugins
-# Time-stamp: <2026-03-09 13:16:44 krylon>
+# Time-stamp: <2026-06-02 13:25:02 krylon>
 *.exe
 *.dll
 *.so
@@ -34,6 +34,4 @@ __pycache__
 *.bin
 *.dat
 
-monkeytype.sqlite3
-
-newsroom
+hertz
