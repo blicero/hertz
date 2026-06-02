@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-06-02 12:25:06 krylon>
+// Time-stamp: <2026-06-02 12:57:37 krylon>
 
 //go:build ignore
 
@@ -26,6 +26,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/blicero/hertz/common"
 	"github.com/blicero/krylib"
 
 	"github.com/hashicorp/logutils"
@@ -239,7 +240,8 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 	if steps["build"] {
 		var output []byte
 
-		dbg.Println("[INFO] Building Newsroom...")
+		dbg.Printf("[INFO] Building %s...\n",
+			strings.ToLower(common.AppName))
 
 		// Put aside a possibly existing binary
 		if err = backupExecutable(); err != nil {
@@ -259,7 +261,8 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 		}
 		var cmd = exec.Command("go", args...)
 		if output, err = cmd.CombinedOutput(); err != nil {
-			dbg.Printf("[ERROR] Error building newsroom: %s\n%s\n",
+			dbg.Printf("[ERROR] Error building %s: %s\n%s\n",
+				common.AppName,
 				err.Error(),
 				output)
 			os.Exit(1)
@@ -370,7 +373,10 @@ func worker(n int, op string, pkgq <-chan string, errq chan<- error, wg *sync.Wa
 	defer wg.Done()
 
 	for folder := range pkgq {
-		pkg = "github.com/blicero/newsroom/" + folder
+		// pkg = "github.com/blicero/%s/" + folder
+		pkg = filepath.Join("github.com/blicero",
+			strings.ToLower(common.AppName),
+			folder)
 		dbg.Printf("[TRACE] Worker %d call %s on %s\n",
 			n,
 			op,
@@ -397,7 +403,8 @@ func worker(n int, op string, pkgq <-chan string, errq chan<- error, wg *sync.Wa
 				cmd = exec.Command("go", op, "-v", "-timeout", "30m", "-race", pkg)
 			}
 		case "nilaway":
-			cmd = exec.Command(op, "-include-pkgs=github.com/blicero/newsroom", pkg)
+			var include = fmt.Sprintf("-include-pkgs=github.com/blicero/%s", strings.ToLower(common.AppName))
+			cmd = exec.Command(op, include, pkg)
 		default:
 			cmd = exec.Command("go", op, "-v", pkg)
 		}
@@ -464,7 +471,7 @@ func initLog(min string) error {
 		writer io.Writer
 		// Trailing space because Logger does not seem to insert one
 		// between fields of the line.
-		logName = "newsroom.build "
+		logName = fmt.Sprintf("%s.build ", common.AppName)
 	)
 
 	// fmt.Printf("Creating Logger with minLevel = %q\n",
@@ -493,13 +500,11 @@ func initLog(min string) error {
 } // func initLog() error
 
 func backupExecutable() error {
-	const (
-		execPath   = "newsroom"
-		backupPath = "bak.newsroom"
-	)
 	var (
-		exists bool
-		err    error
+		err        error
+		exists     bool
+		execPath   = strings.ToLower(common.AppName)
+		backupPath = "bak." + execPath
 	)
 
 	if exists, err = krylib.Fexists(execPath); err != nil {
