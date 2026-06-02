@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-02 12:10:30 krylon>
+// Time-stamp: <2026-06-02 12:44:26 krylon>
 
 // Package monitor implements the process of collecting and storing data
 // in a regular manner.
@@ -58,6 +58,16 @@ func (mon *Monitor) Start() {
 	mon.active.Store(true)
 	go mon.process()
 } // func (mon *Monitor) Start()
+
+// Stop tells the Monitor to stop collecting data by clearing its active flag.
+func (mon *Monitor) Stop() {
+	mon.active.Store(false)
+} // func (mon *Monitor) Stop()
+
+// IsActive returns the Monitor's active flag.
+func (mon *Monitor) IsActive() bool {
+	return mon.active.Load()
+} // func (*mon Monitor) IsActive() bool
 
 func (mon *Monitor) process() {
 	var (
