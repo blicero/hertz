@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-01 14:34:36 krylon>
+// Time-stamp: <2026-06-02 11:55:50 krylon>
 
 // Package collect implements collecting CPU frequency data.
 package collect
@@ -17,7 +17,7 @@ import (
 	"github.com/blicero/hertz/model"
 )
 
-const (
+const ( // nolint: unused
 	linuxCPUInfo   = "/proc/cpuinfo"
 	linuxSysfsFreq = "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
 	freeBSDCpuInfo = "/linproc/cpuinfo"
