@@ -2,11 +2,12 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 11:13:23 krylon>
+// Time-stamp: <2026-06-03 11:36:01 krylon>
 
 package web
 
 import (
+	"context"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -137,6 +138,7 @@ func (srv *Server) IsActive() bool {
 // Stop clears the Server's active flag.
 func (srv *Server) Stop() {
 	srv.active.Store(false)
+	srv.web.Shutdown(context.Background())
 } // func (srv *Server) Stop()
 
 // Run executes the Server's loop, waiting for new connections and starting
