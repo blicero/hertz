@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-02 12:47:40 krylon>
+// Time-stamp: <2026-06-03 11:36:39 krylon>
 
 package main
 
@@ -16,6 +16,7 @@ import (
 
 	"github.com/blicero/hertz/common"
 	"github.com/blicero/hertz/monitor"
+	"github.com/blicero/hertz/web"
 )
 
 // XXX Set this to a more reasonable value after debugging is done!
@@ -28,11 +29,14 @@ func main() {
 		common.BuildStamp.Format(common.TimestampFormat))
 
 	var (
-		err      error
-		interval int64
-		ticker   *time.Ticker
-		sigQ     chan os.Signal
-		mon      *monitor.Monitor
+		err            error
+		interval       int64
+		webAddr        = fmt.Sprintf("[::]:%d", common.WebPort)
+		runWeb, runMon bool
+		ticker         *time.Ticker
+		sigQ           chan os.Signal
+		mon            *monitor.Monitor
+		srv            *web.Server
 	)
 
 	flag.Int64Var(
@@ -41,17 +45,51 @@ func main() {
 		defaultInterval,
 		"Interval (in seconds) between data collections")
 
+	flag.StringVar(
+		&webAddr,
+		"addr",
+		webAddr,
+		"IP Adress for the web server to listen on")
+
+	flag.BoolVar(
+		&runWeb,
+		"web",
+		false,
+		"Open the web interface?",
+	)
+
+	flag.BoolVar(
+		&runMon,
+		"mon",
+		false,
+		"Run the Monitor",
+	)
+
 	flag.Parse()
 
-	if mon, err = monitor.Create(interval); err != nil {
-		fmt.Fprintf(
-			os.Stderr,
-			"Failed to create Monitor: %s\n",
-			err.Error())
-		os.Exit(1)
+	if runMon {
+		if mon, err = monitor.Create(interval); err != nil {
+			fmt.Fprintf(
+				os.Stderr,
+				"Failed to create Monitor: %s\n",
+				err.Error())
+			os.Exit(1)
+		}
+
+		mon.Start()
 	}
 
-	mon.Start()
+	if runWeb {
+		if srv, err = web.Create(webAddr); err != nil {
+			fmt.Fprintf(
+				os.Stderr,
+				"Creating web server failed: %s\n",
+				err.Error())
+			os.Exit(2)
+		}
+
+		go srv.Run()
+	}
 
 	ticker = time.NewTicker(common.ActiveTimeout)
 	defer ticker.Stop()
@@ -62,15 +100,21 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			if !mon.IsActive() {
-				return
-			}
+			continue
 		case s := <-sigQ:
 			fmt.Fprintf(
 				os.Stderr,
 				"Caught signal: %s\n",
 				s)
-			mon.Stop()
+
+			if mon != nil {
+				mon.Stop()
+			}
+
+			if srv != nil {
+				srv.Stop()
+			}
+
 			return
 		}
 	}

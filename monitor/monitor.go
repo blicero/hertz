@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-02 12:44:26 krylon>
+// Time-stamp: <2026-06-03 11:57:25 krylon>
 
 // Package monitor implements the process of collecting and storing data
 // in a regular manner.
@@ -10,6 +10,7 @@ package monitor
 
 import (
 	"log"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -26,6 +27,7 @@ type Monitor struct {
 	db       *database.Database
 	probe    *collect.Probe
 	active   atomic.Bool
+	wg       sync.WaitGroup
 	interval time.Duration
 }
 
@@ -56,12 +58,13 @@ func Create(tickSeconds int64) (*Monitor, error) {
 // Start sets the Monitor to run.
 func (mon *Monitor) Start() {
 	mon.active.Store(true)
-	go mon.process()
+	mon.wg.Go(mon.process)
 } // func (mon *Monitor) Start()
 
 // Stop tells the Monitor to stop collecting data by clearing its active flag.
 func (mon *Monitor) Stop() {
 	mon.active.Store(false)
+	mon.wg.Wait()
 } // func (mon *Monitor) Stop()
 
 // IsActive returns the Monitor's active flag.
@@ -75,6 +78,10 @@ func (mon *Monitor) process() {
 		rec    *model.FreqRecord
 		ticker *time.Ticker
 	)
+
+	mon.log.Printf("[TRACE] Starting to collect data every %s\n",
+		mon.interval)
+	defer mon.log.Println("[TRACE] Terminating Monitor process")
 
 	ticker = time.NewTicker(mon.interval)
 	defer ticker.Stop()
