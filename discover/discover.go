@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 12:59:47 krylon>
+// Time-stamp: <2026-06-03 13:39:01 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -18,6 +18,7 @@ import (
 	pd "github.com/schollz/peerdiscovery"
 )
 
+// Explorer looks for peers on the network.
 type Explorer struct {
 	log    *log.Logger
 	peer   *pd.PeerDiscovery
@@ -26,6 +27,7 @@ type Explorer struct {
 	peers  map[string]string
 }
 
+// Create creates a new Explorer.
 func Create(mode string) (*Explorer, error) {
 	var (
 		err error
@@ -47,8 +49,18 @@ func Create(mode string) (*Explorer, error) {
 		return nil, err
 	}
 
+	xp.active.Store(true)
+
 	return xp, nil
 } // func Create(mode string) (*Explorer, error)
+
+// Shutdown stops the Explorer's activity.
+func (xp *Explorer) Shutdown() {
+	xp.lock.Lock()
+	xp.peer.Shutdown()
+	xp.lock.Unlock()
+	xp.active.Store(false)
+}
 
 func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 	xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
