@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 12:03:40 krylon>
+// Time-stamp: <2026-06-03 13:43:53 krylon>
 
 package main
 
@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/blicero/hertz/common"
+	"github.com/blicero/hertz/discover"
 	"github.com/blicero/hertz/monitor"
 	"github.com/blicero/hertz/web"
 )
@@ -33,6 +34,8 @@ func main() {
 		interval       int64
 		webAddr        = fmt.Sprintf("[::]:%d", common.WebPort)
 		runWeb, runMon bool
+		mode           string
+		xp             *discover.Explorer
 		ticker         *time.Ticker
 		sigQ           chan os.Signal
 		mon            *monitor.Monitor
@@ -76,6 +79,7 @@ func main() {
 	}
 
 	if runMon {
+		mode = "agent"
 		if mon, err = monitor.Create(interval); err != nil {
 			fmt.Fprintf(
 				os.Stderr,
@@ -88,6 +92,7 @@ func main() {
 	}
 
 	if runWeb {
+		mode = "server"
 		if srv, err = web.Create(webAddr); err != nil {
 			fmt.Fprintf(
 				os.Stderr,
@@ -97,6 +102,15 @@ func main() {
 		}
 
 		go srv.Run()
+	}
+
+	if xp, err = discover.Create(mode); err != nil {
+		fmt.Fprint(
+			os.Stderr,
+			"Failed to initialize peer discovery in %s mode: %s\n",
+			mode,
+			err.Error(),
+		)
 	}
 
 	ticker = time.NewTicker(common.ActiveTimeout)
@@ -121,6 +135,10 @@ func main() {
 
 			if srv != nil {
 				srv.Stop()
+			}
+
+			if xp != nil {
+				xp.Shutdown()
 			}
 
 			return
