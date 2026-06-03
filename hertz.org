@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-03 12:01:03 krylon>
+# Time-stamp: <2026-06-03 13:48:08 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,17 +14,18 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-03 Mi 12:01]
+   #+CAPTION: Clock summary at [2026-06-03 Mi 13:48]
    | Headline                    | Time    |         |      |
    |-----------------------------+---------+---------+------|
-   | *Total time*                | *14:14* |         |      |
+   | *Total time*                | *15:48* |         |      |
    |-----------------------------+---------+---------+------|
-   | *Hertz [0/1]*               | *14:14* |         |      |
-   | \_  /Components [0/1]/      |         | /14:14/ |      |
+   | *Hertz [0/1]*               | *15:48* |         |      |
+   | \_  /Components [0/1]/      |         | /15:48/ |      |
    | \_    Data Model [0/0]      |         |         | 5:54 |
    | \_    Data Collection [0/0] |         |         | 3:15 |
-   | \_    Database [0/1]        |         |         | 2:56 |
+   | \_    Database [0/1]        |         |         | 3:20 |
    | \_    Monitor [0/0]         |         |         | 0:46 |
+   | \_    Peer Discovery [0/0]  |         |         | 1:10 |
    | \_    Web UI [0/0]          |         |         | 0:17 |
    | \_    Main [0/0]            |         |         | 1:06 |
    #+END:
@@ -59,6 +60,7 @@
     :VISIBILITY: all
     :END:
     :LOGBOOK:
+    CLOCK: [2026-06-03 Mi 12:08]--[2026-06-03 Mi 12:32] =>  0:24
     CLOCK: [2026-06-02 Di 10:48]--[2026-06-02 Di 11:46] =>  0:58
     CLOCK: [2026-06-01 Mo 14:50]--[2026-06-01 Mo 16:48] =>  1:58
     :END:
@@ -78,9 +80,22 @@
     :END:
     Monitor is my name for the part that regularly collects and saves data.
 *** Aggregate [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: all
+    :END:
     Having lots of little computers collecting data on their own is no fun, I
     want send the data to a central repository
     Maybe use DNS-SD to find the machine to talk to about that?
+*** Peer Discovery [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: all
+    :END:
+    :LOGBOOK:
+    CLOCK: [2026-06-03 Mi 13:31]--[2026-06-03 Mi 13:48] =>  0:17
+    CLOCK: [2026-06-03 Mi 12:10]--[2026-06-03 Mi 13:03] =>  0:53
+    :END:
 *** Web UI [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
