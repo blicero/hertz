@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-02 11:54:51 krylon>
+// Time-stamp: <2026-06-03 11:14:07 krylon>
 
 // Package logdomain provides constants to identify different parts of
 // the application.
@@ -17,6 +17,7 @@ const (
 	Collect ID = iota
 	Database
 	Monitor
+	Web
 )
 
 // All returns a slice of all valid IDs.
@@ -25,5 +26,6 @@ func All() []ID {
 		Collect,
 		Database,
 		Monitor,
+		Web,
 	}
 }
