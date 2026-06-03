@@ -2,13 +2,14 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 13:39:01 krylon>
+// Time-stamp: <2026-06-03 14:58:53 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
 
 import (
 	"log"
+	"strconv"
 	"sync"
 	"sync/atomic"
 
@@ -36,10 +37,12 @@ func Create(mode string) (*Explorer, error) {
 	)
 
 	opt.Limit = -1
+	opt.TimeLimit = -1
 	opt.Payload = []byte(mode)
-	opt.IPVersion = pd.IPv6
+	// opt.IPVersion = pd.IPv6
 	opt.Notify = xp.handleNewPeer
 	opt.NotifyLost = xp.handleLostPeer
+	opt.Port = strconv.FormatInt(common.WebPort, 10)
 
 	if xp.log, err = common.GetLogger(logdomain.Discover); err != nil {
 		return nil, err
@@ -63,13 +66,13 @@ func (xp *Explorer) Shutdown() {
 }
 
 func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
-	xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
-		info.Address,
-		info.Payload)
 	xp.lock.Lock()
 	defer xp.lock.Unlock()
 
 	if _, ok := xp.peers[info.Address]; !ok {
+		xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
+			info.Address,
+			info.Payload)
 		xp.peers[info.Address] = string(info.Payload)
 	}
 } // func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered)
