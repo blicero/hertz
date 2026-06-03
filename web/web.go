@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 11:36:01 krylon>
+// Time-stamp: <2026-06-03 11:41:29 krylon>
 
 package web
 
@@ -181,6 +181,35 @@ func (srv *Server) handleNotFound(w http.ResponseWriter, r *http.Request) {
 
 func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+	const tmplName = "main"
+
+	var (
+		err  error
+		msg  string
+		tmpl *template.Template
+		data = tmplDataIndex{
+			tmplDataBase: tmplDataBase{
+				Title: "Main",
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+		}
+	)
+
+	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////
