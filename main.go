@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 11:36:39 krylon>
+// Time-stamp: <2026-06-03 12:03:40 krylon>
 
 package main
 
@@ -66,6 +66,14 @@ func main() {
 	)
 
 	flag.Parse()
+
+	if !(runMon || runWeb) {
+		fmt.Fprint(
+			os.Stderr,
+			"At least one flag of -mon or -web must be given!",
+		)
+		os.Exit(1)
+	}
 
 	if runMon {
 		if mon, err = monitor.Create(interval); err != nil {
