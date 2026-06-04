@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 14:58:53 krylon>
+// Time-stamp: <2026-06-04 13:51:01 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -22,6 +22,8 @@ import (
 // Explorer looks for peers on the network.
 type Explorer struct {
 	log    *log.Logger
+	mode   string
+	server string
 	peer   *pd.PeerDiscovery
 	active atomic.Bool
 	lock   sync.RWMutex
@@ -33,7 +35,10 @@ func Create(mode string) (*Explorer, error) {
 	var (
 		err error
 		opt pd.Settings
-		xp  = &Explorer{peers: make(map[string]string)}
+		xp  = &Explorer{
+			mode:  mode,
+			peers: make(map[string]string),
+		}
 	)
 
 	opt.Limit = -1
@@ -70,10 +75,15 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 	defer xp.lock.Unlock()
 
 	if _, ok := xp.peers[info.Address]; !ok {
+		var pl = string(info.Payload)
 		xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
 			info.Address,
-			info.Payload)
-		xp.peers[info.Address] = string(info.Payload)
+			pl)
+		xp.peers[info.Address] = pl
+
+		if xp.mode != "server" && pl == "server" {
+			xp.server = pl
+		}
 	}
 } // func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered)
 
