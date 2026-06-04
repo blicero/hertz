@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-02 11:55:50 krylon>
+// Time-stamp: <2026-06-04 16:13:45 krylon>
 
 // Package collect implements collecting CPU frequency data.
 package collect
@@ -17,12 +17,14 @@ import (
 	"github.com/blicero/hertz/model"
 )
 
-const ( // nolint: unused
+// nolint: unused
+const (
 	linuxCPUInfo   = "/proc/cpuinfo"
 	linuxSysfsFreq = "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
 	freeBSDCpuInfo = "/linproc/cpuinfo"
 )
 
+// nolint: unused
 func round(f float64) int64 {
 	return int64(math.Floor(f + 0.5))
 }
@@ -50,7 +52,9 @@ func New() (*Probe, error) {
 func (p *Probe) Collect() (*model.FreqRecord, error) {
 	var (
 		err error
-		rec = new(model.FreqRecord)
+		rec = &model.FreqRecord{
+			UUID: common.GetUUID(),
+		}
 	)
 
 	if rec.Freq, err = p.getFreq(); err != nil {

@@ -2,9 +2,9 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-01 14:37:23 krylon>
+// Time-stamp: <2026-06-04 14:00:02 krylon>
 
-//go:build linux || freebsd
+//go:build linux || freebsd || netbsd
 
 package collect
 
@@ -29,7 +29,7 @@ func (p *Probe) getFreq() ([]int64, error) {
 	)
 
 	switch runtime.GOOS {
-	case "linux":
+	case "linux", "netbsd":
 		path = linuxCPUInfo
 	case "freebsd":
 		path = freeBSDCpuInfo
