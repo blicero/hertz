@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-05 18:05:11 krylon>
+# Time-stamp: <2026-06-05 21:01:59 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,31 +7,32 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [0/1]
+* Hertz [2/3]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-05 Fr 18:05]
-   | Headline                    | Time    |         |      |      |
-   |-----------------------------+---------+---------+------+------|
-   | *Total time*                | *17:21* |         |      |      |
-   |-----------------------------+---------+---------+------+------|
-   | *Hertz [0/1]*               | *17:21* |         |      |      |
-   | \_  /Components [0/1]/      |         | /17:21/ |      |      |
-   | \_    Data Model [0/0]      |         |         | 6:34 |      |
-   | \_    Data Collection [0/0] |         |         | 3:15 |      |
-   | \_    Database [0/1]        |         |         | 3:20 |      |
-   | \_    Monitor [0/0]         |         |         | 0:46 |      |
-   | \_    Aggregate [0/0]       |         |         | 0:30 |      |
-   | \_      Client [0/0]        |         |         |      | 0:30 |
-   | \_    Peer Discovery [0/0]  |         |         | 1:33 |      |
-   | \_    Web UI [0/0]          |         |         | 0:17 |      |
-   | \_    Main [0/0]            |         |         | 1:06 |      |
+   #+CAPTION: Clock summary at [2026-06-05 Fr 20:26]
+   | Headline                        | Time    |         |      |      |
+   |---------------------------------+---------+---------+------+------|
+   | *Total time*                    | *19:11* |         |      |      |
+   |---------------------------------+---------+---------+------+------|
+   | *Hertz [1/2]*                   | *19:11* |         |      |      |
+   | \_  /Components [1/2]/          |         | /19:11/ |      |      |
+   | \_    Data Model [0/0]          |         |         | 6:55 |      |
+   | \_    Data Collection [0/0]     |         |         | 3:15 |      |
+   | \_    Database [1/2]            |         |         | 4:39 |      |
+   | \_      Switch key to timestamp |         |         |      | 1:02 |
+   | \_    Monitor [0/0]             |         |         | 0:46 |      |
+   | \_    Aggregate [0/0]           |         |         | 0:40 |      |
+   | \_      Client [0/0]            |         |         |      | 0:40 |
+   | \_    Peer Discovery [0/0]      |         |         | 1:33 |      |
+   | \_    Web UI [0/0]              |         |         | 0:17 |      |
+   | \_    Main [0/0]                |         |         | 1:06 |      |
    #+END:
-** Components [0/1]
+** Components [2/3]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -42,6 +43,7 @@
     :VISIBILITY: all
     :END:
     :LOGBOOK:
+    CLOCK: [2026-06-05 Fr 20:05]--[2026-06-05 Fr 20:26] =>  0:21
     CLOCK: [2026-06-04 Do 16:12]--[2026-06-04 Do 16:52] =>  0:40
     CLOCK: [2026-05-30 Sa 11:49]--[2026-05-30 Sa 17:43] =>  5:54
     :END:
@@ -57,12 +59,13 @@
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
-*** Database [0/1]
+*** Database [2/3]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
     :END:
     :LOGBOOK:
+    CLOCK: [2026-06-05 Fr 18:43]--[2026-06-05 Fr 19:00] =>  0:17
     CLOCK: [2026-06-03 Mi 12:08]--[2026-06-03 Mi 12:32] =>  0:24
     CLOCK: [2026-06-02 Di 10:48]--[2026-06-02 Di 11:46] =>  0:58
     CLOCK: [2026-06-01 Mo 14:50]--[2026-06-01 Mo 16:48] =>  1:58
@@ -71,6 +74,19 @@
     On second thought, nah, SQLite is just *too good* to pass.
     ... On third thought, however, I think BuntDB sounds delicious. If only to
     cut down on compile times, as it is pure Go.
+**** DONE Register Clients
+     CLOSED: [2026-06-05 Fr 21:01]
+     :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 20:28]--[2026-06-05 Fr 21:01] =>  0:33
+     :END:
+**** DONE Switch key to timestamp
+     CLOSED: [2026-06-05 Fr 20:02]
+     :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 19:00]--[2026-06-05 Fr 20:02] =>  1:02
+     :END:
+     After studying BuntDB's API a little, I think it would be better to use
+     timestamps for keys, because despite having Indices, I cannot search per
+     se.
 **** TODO Export
 *** Monitor [0/0]
     :PROPERTIES:
@@ -96,6 +112,7 @@
      :VISIBILITY: all
      :END:
      :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 18:33]--[2026-06-05 Fr 18:43] =>  0:10
      CLOCK: [2026-06-05 Fr 15:20]--[2026-06-05 Fr 15:50] =>  0:30
      :END:
 *** Peer Discovery [0/0]
