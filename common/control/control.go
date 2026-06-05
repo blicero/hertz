@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 15:28:17 krylon>
+// Time-stamp: <2026-06-05 19:02:07 krylon>
 
 //go:generate stringer -type=Command
 
@@ -19,6 +19,6 @@ const (
 
 // Message is a control message.
 type Message struct {
-	cmd     Command
-	payload string
+	Cmd     Command
+	Payload string
 }
