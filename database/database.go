@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 19:39:26 krylon>
+// Time-stamp: <2026-06-05 20:23:28 krylon>
 
 // Package database implements data persistence.
 package database
@@ -105,7 +105,7 @@ func (db *Database) getID(tx *buntdb.Tx) (int64, error) {
 } // func (db *Database) getID() (int64, error)
 
 // RecordAdd adds a Record to the database.
-func (db *Database) RecordAdd(rec *model.FreqRecord) error {
+func (db *Database) RecordAdd(rec *model.Record) error {
 	var (
 		err error
 	)
@@ -166,7 +166,7 @@ func (db *Database) RecordAdd(rec *model.FreqRecord) error {
 } // func (db *Database) RecordAdd(rec *model.FreqRecord) error
 
 // RecordAddRemote adds a Record from a remote data collector
-func (db *Database) RecordAddRemote(host string, rec *model.FreqRecord) error {
+func (db *Database) RecordAddRemote(host string, rec *model.Record) error {
 	var (
 		err error
 	)
@@ -231,14 +231,14 @@ func (db *Database) RecordAddRemote(host string, rec *model.FreqRecord) error {
 
 // RecordGet loads all Records whose timestamp is greater or equal to the given
 // time value.
-func (db *Database) RecordGet(begin time.Time) ([]*model.FreqRecord, error) {
+func (db *Database) RecordGet(begin time.Time) ([]*model.Record, error) {
 	var (
 		err     error
-		records []*model.FreqRecord
+		records []*model.Record
 		minKey  string
 	)
 
-	records = make([]*model.FreqRecord, 0, 32)
+	records = make([]*model.Record, 0, 32)
 	minKey = fmt.Sprintf("rec:%d", begin.Unix())
 
 	if err = db.db.View(func(tx *buntdb.Tx) error {
@@ -250,7 +250,7 @@ func (db *Database) RecordGet(begin time.Time) ([]*model.FreqRecord, error) {
 			var (
 				ex1 error
 				buf []byte
-				rec = new(model.FreqRecord)
+				rec = new(model.Record)
 			)
 
 			buf = []byte(val)

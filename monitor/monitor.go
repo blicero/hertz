@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 11:57:25 krylon>
+// Time-stamp: <2026-06-05 20:23:28 krylon>
 
 // Package monitor implements the process of collecting and storing data
 // in a regular manner.
@@ -75,7 +75,7 @@ func (mon *Monitor) IsActive() bool {
 func (mon *Monitor) process() {
 	var (
 		err    error
-		rec    *model.FreqRecord
+		rec    *model.Record
 		ticker *time.Ticker
 	)
 

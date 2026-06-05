@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-04 16:13:45 krylon>
+// Time-stamp: <2026-06-05 20:23:29 krylon>
 
 // Package collect implements collecting CPU frequency data.
 package collect
@@ -49,10 +49,10 @@ func New() (*Probe, error) {
 } // func New() (*Probe, error)
 
 // Collect attempts to collect data on the current CPU frequency.
-func (p *Probe) Collect() (*model.FreqRecord, error) {
+func (p *Probe) Collect() (*model.Record, error) {
 	var (
 		err error
-		rec = &model.FreqRecord{
+		rec = &model.Record{
 			UUID: common.GetUUID(),
 		}
 	)

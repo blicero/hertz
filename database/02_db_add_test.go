@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 19:57:37 krylon>
+// Time-stamp: <2026-06-05 20:23:27 krylon>
 
 package database
 
@@ -18,7 +18,10 @@ const (
 	recCnt = 120
 )
 
-var begin time.Time
+var (
+	begin   time.Time
+	records []*model.Record
+)
 
 func TestDBRecordAdd(t *testing.T) {
 	if tdb == nil {
@@ -35,9 +38,10 @@ func TestDBRecordAdd(t *testing.T) {
 	)
 
 	begin = baseStamp
+	records = make([]*model.Record, recCnt)
 
 	for i := range recCnt {
-		var rec = model.FreqRecord{
+		var rec = &model.Record{
 			Timestamp: baseStamp.Add(time.Second * 60 * time.Duration(i)),
 			Freq:      make([]int64, 4),
 		}
@@ -52,7 +56,7 @@ func TestDBRecordAdd(t *testing.T) {
 		rec.Freq[2] = f2
 		rec.Freq[3] = f2
 
-		if err = tdb.RecordAdd(&rec); err != nil {
+		if err = tdb.RecordAdd(rec); err != nil {
 			t.Fatalf("Failed to add Record: %s\n",
 				err.Error())
 		} else if rec.ID == 0 {
@@ -60,25 +64,43 @@ func TestDBRecordAdd(t *testing.T) {
 				rec.ID,
 				i+1)
 		}
+
+		records[i] = rec
 	}
 } // func TestDBRecordAdd(t *testing.T)
 
 func TestDBRecordGet(t *testing.T) {
 	if tdb == nil {
 		t.SkipNow()
+	} else if records == nil {
+		t.SkipNow()
 	}
 
 	var (
-		err     error
-		records []*model.FreqRecord
+		err       error
+		dbRecords []*model.Record
 	)
 
-	if records, err = tdb.RecordGet(begin); err != nil {
+	if dbRecords, err = tdb.RecordGet(begin); err != nil {
 		t.Fatalf("Failed to load Records: %s\n",
 			err.Error())
-	} else if len(records) != recCnt {
+	} else if len(dbRecords) != recCnt {
 		t.Fatalf("Unexpected number of records: %d (expected %d)",
-			len(records),
+			len(dbRecords),
 			recCnt)
+	}
+
+	for i, r1 := range dbRecords {
+		r2 := records[i]
+
+		if !r1.Equal(r2) {
+			t.Fatalf(`Records %d are not equal:
+Original: %#v,
+Fetched:  %#v
+`,
+				r1.ID,
+				r1,
+				r2)
+		}
 	}
 } // func TestDBRecordGet(t *testing.T)

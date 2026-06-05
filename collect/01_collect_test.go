@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-01 11:39:19 krylon>
+// Time-stamp: <2026-06-05 20:23:30 krylon>
 
 package collect
 
@@ -33,7 +33,7 @@ func TestProbeCollect(t *testing.T) {
 
 	var (
 		err error
-		rec *model.FreqRecord
+		rec *model.Record
 	)
 
 	if rec, err = tp.Collect(); err != nil {
