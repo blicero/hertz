@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-04 13:51:01 krylon>
+// Time-stamp: <2026-06-05 18:40:05 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -13,6 +13,7 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/blicero/hertz/client"
 	"github.com/blicero/hertz/common"
 	"github.com/blicero/hertz/logdomain"
 	"github.com/schollz/peerdiscovery"
@@ -28,6 +29,7 @@ type Explorer struct {
 	active atomic.Bool
 	lock   sync.RWMutex
 	peers  map[string]string
+	client *client.Client
 }
 
 // Create creates a new Explorer.
