@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 20:23:26 krylon>
+// Time-stamp: <2026-06-05 21:30:05 krylon>
 
 // Package model provides data types used throughout the application.
 package model
@@ -34,3 +34,11 @@ func (r *Record) Equal(other *Record) bool {
 
 	return true
 } // func (r FreqRecord) Equal(other FreqRecord) bool
+
+// SrvResponse is the response sent by the Server to the Client.
+type SrvResponse struct {
+	Status    bool      `json:"status"`
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+	Payload   string    `json:"payload"`
+}

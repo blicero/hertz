@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 11:41:29 krylon>
+// Time-stamp: <2026-06-05 22:47:03 krylon>
 
 package web
 
@@ -18,20 +18,25 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"text/template"
 	"time"
 
 	"github.com/blicero/hertz/common"
+	"github.com/blicero/hertz/database"
 	"github.com/blicero/hertz/logdomain"
+	"github.com/blicero/hertz/model"
 	"github.com/gorilla/mux"
+	"github.com/tidwall/buntdb"
 )
 
 const (
 	cacheControl = "max-age=3600, public"
 	noCache      = "no-store, max-age=0"
 	tmplFolder   = "assets/templates"
+	poolSize     = 4
 )
 
 //go:embed assets
@@ -47,6 +52,7 @@ type Server struct {
 	tmpl      *template.Template
 	web       http.Server
 	mimeTypes map[string]string
+	pool      *database.Pool
 }
 
 // Create returns a new web Server.
@@ -72,6 +78,10 @@ func Create(addr string) (*Server, error) {
 	)
 
 	if srv.log, err = common.GetLogger(logdomain.Web); err != nil {
+		return nil, err
+	} else if srv.pool, err = database.NewPool(poolSize); err != nil {
+		srv.log.Printf("[CRITICAL] Failed to open Database connection pool: %s\n",
+			err.Error())
 		return nil, err
 	}
 
@@ -139,6 +149,7 @@ func (srv *Server) IsActive() bool {
 func (srv *Server) Stop() {
 	srv.active.Store(false)
 	srv.web.Shutdown(context.Background())
+	srv.pool.Close()
 } // func (srv *Server) Stop()
 
 // Run executes the Server's loop, waiting for new connections and starting
@@ -210,7 +221,7 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 			err.Error())
 		srv.sendErrorMessage(w, msg)
 	}
-}
+} // func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request)
 
 //////////////////////////////////////////////////////////////////////////////
 /// Handle AJAX //////////////////////////////////////////////////////////////
@@ -241,7 +252,130 @@ func (srv *Server) handleBeacon(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", noCache)
 	w.WriteHeader(200)
 	w.Write(buf) // nolint: errcheck,gosec
-} // func (srv *WebFrontend) handleBeacon(w http.ResponseWriter, r *http.Request)
+} // func (srv *Server) handleBeacon(w http.ResponseWriter, r *http.Request)
+
+//////////////////////////////////////////////////////////////////////////////
+/// Handle Clients ///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+
+	var (
+		err       error
+		vars      map[string]string
+		name, msg string
+		timestamp time.Time
+		db        *database.Database
+
+		buf  []byte
+		data = model.SrvResponse{
+			Timestamp: time.Now(),
+		}
+	)
+
+	vars = mux.Vars(r)
+	name = vars["name"]
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if timestamp, err = db.ClientGet(name); err != nil {
+		if errors.Is(err, buntdb.ErrNotFound) {
+			data.Payload = "0"
+			data.Status = true
+		} else {
+			msg = fmt.Sprintf("Failed to lookup Client %s: %s",
+				name,
+				err.Error())
+			srv.log.Printf("[ERROR] %s\n", msg)
+			data.Message = msg
+		}
+	} else {
+		data.Payload = strconv.FormatInt(timestamp.Unix(), 10)
+		data.Status = true
+	}
+
+	if buf, err = json.Marshal(&data); err != nil {
+		msg = fmt.Sprintf("Failed to serialize Response: %s\n",
+			err.Error())
+		buf = errJSON(msg)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", noCache)
+	w.WriteHeader(200)
+	w.Write(buf) // nolint: errcheck,gosec
+} // func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+
+	var (
+		err       error
+		db        *database.Database
+		vars      map[string]string
+		name, msg string
+		body      []byte
+		buf       []byte
+		records   []*model.Record
+		res       = model.SrvResponse{
+			Timestamp: time.Now(),
+		}
+	)
+
+	vars = mux.Vars(r)
+	name = vars["name"]
+	records = make([]*model.Record, 0)
+
+	if body, err = io.ReadAll(r.Body); err != nil {
+		msg = fmt.Sprintf("failed to read request body: %s",
+			err.Error())
+		srv.log.Printf("[CANTHAPPEN] %s\n",
+			msg)
+		res.Message = msg
+		goto SEND
+	} else if err = json.Unmarshal(body, &records); err != nil {
+		msg = fmt.Sprintf("failed to parse request body: %s\n%s\n\n",
+			err.Error(),
+			body)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		res.Message = msg
+		goto SEND
+	}
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if err = db.RecordAddRemoteBulk(name, records); err != nil {
+		msg = fmt.Sprintf("Failed to store %d records from %s: %s",
+			len(records),
+			name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		res.Message = msg
+	}
+
+	res.Status = true
+	res.Message = fmt.Sprintf("Successfully stored %d records", len(records))
+	res.Payload = strconv.FormatInt(
+		records[len(records)-1].Timestamp.Unix(),
+		10)
+
+SEND:
+	if buf, err = json.Marshal(&res); err != nil {
+		msg = fmt.Sprintf("Failed to serialize response: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n",
+			msg)
+		buf = errJSON(msg)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", noCache)
+	w.WriteHeader(200)
+	w.Write(buf) // nolint: errcheck,gosec
+} // func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request)
 
 //////////////////////////////////////////////////////////////////////////////
 /// Handle static assets /////////////////////////////////////////////////////
