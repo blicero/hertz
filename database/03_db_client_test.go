@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 20:59:09 krylon>
+// Time-stamp: <2026-06-05 21:50:10 krylon>
 
 package database
 
@@ -16,31 +16,30 @@ import (
 
 const clientCnt = 10
 
-var clients map[string]time.Time
+var clients map[string]bool
 
 func TestClientAdd(t *testing.T) {
 	if tdb == nil {
 		t.SkipNow()
 	}
 
-	clients = make(map[string]time.Time, clientCnt)
+	clients = make(map[string]bool, clientCnt)
 
 	for i := range clientCnt {
 		var (
-			err   error
-			stamp time.Time
-			name  string
+			err  error
+			name string
 		)
 
 		name = fmt.Sprintf("client%03d", i)
 
-		if stamp, err = tdb.ClientRegister(name); err != nil {
+		if err = tdb.ClientRegister(name); err != nil {
 			t.Fatalf("Registering client %s failed: %s",
 				name,
 				err.Error())
 		}
 
-		clients[name] = stamp
+		clients[name] = true
 	}
 } // func TestClientAdd(t *testing.T)
 
@@ -49,21 +48,23 @@ func TestClientGet(t *testing.T) {
 		t.SkipNow()
 	}
 
-	for name, s1 := range clients {
+	var tzero = time.Unix(0, 0)
+
+	for name := range clients {
 		var (
-			err error
-			s2  time.Time
+			err   error
+			stamp time.Time
 		)
 
-		if s2, err = tdb.ClientGet(name); err != nil {
+		if stamp, err = tdb.ClientGet(name); err != nil {
 			t.Fatalf("Failed to lookup Client %s: %s",
 				name,
 				err.Error())
-		} else if !s1.Equal(s2) {
+		} else if !stamp.Equal(tzero) {
 			t.Fatalf("Unexpected timestamp for Client %s: %s (expected %s)",
 				name,
-				s2.Format(common.TimestampFormat),
-				s1.Format(common.TimestampFormat))
+				stamp.Format(common.TimestampFormat),
+				tzero.Format(common.TimestampFormat))
 		}
 	}
 } // func TestClientGet(t *testing.T)

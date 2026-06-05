@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 21:12:38 krylon>
+// Time-stamp: <2026-06-05 21:46:14 krylon>
 
 // Package database implements data persistence.
 package database
@@ -297,12 +297,11 @@ func (db *Database) RecordGet(begin time.Time) ([]*model.Record, error) {
 } // func (db *Database) RecordGet(begin time.Time) ([]*model.FreqRecord, error)
 
 // ClientRegister adds a Client to the Database.
-func (db *Database) ClientRegister(name string) (time.Time, error) {
+func (db *Database) ClientRegister(name string) error {
 	var (
-		err    error
-		tstamp = time.Now()
-		ckey   = fmt.Sprintf("client:%s", name)
-		cval   = strconv.FormatInt(tstamp.Unix(), 10)
+		err  error
+		ckey = fmt.Sprintf("client:%s", name)
+		cval = "0" // strconv.FormatInt(tstamp.Unix(), 10)
 	)
 
 	if err = db.db.Update(func(tx *buntdb.Tx) error {
@@ -321,8 +320,8 @@ func (db *Database) ClientRegister(name string) (time.Time, error) {
 			err.Error())
 	}
 
-	return tstamp.Truncate(time.Second), err
-} // func (db *Database) ClientRegister(name string) (time.Time, error)
+	return err
+} // func (db *Database) ClientRegister(name string) error
 
 // ClientGet looks for a Client's timestamp in the Database.
 func (db *Database) ClientGet(name string) (time.Time, error) {
