@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-05 21:01:59 krylon>
+# Time-stamp: <2026-06-05 23:23:15 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,32 +7,36 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [2/3]
+* Hertz [4/5]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-05 Fr 20:26]
-   | Headline                        | Time    |         |      |      |
-   |---------------------------------+---------+---------+------+------|
-   | *Total time*                    | *19:11* |         |      |      |
-   |---------------------------------+---------+---------+------+------|
-   | *Hertz [1/2]*                   | *19:11* |         |      |      |
-   | \_  /Components [1/2]/          |         | /19:11/ |      |      |
-   | \_    Data Model [0/0]          |         |         | 6:55 |      |
-   | \_    Data Collection [0/0]     |         |         | 3:15 |      |
-   | \_    Database [1/2]            |         |         | 4:39 |      |
-   | \_      Switch key to timestamp |         |         |      | 1:02 |
-   | \_    Monitor [0/0]             |         |         | 0:46 |      |
-   | \_    Aggregate [0/0]           |         |         | 0:40 |      |
-   | \_      Client [0/0]            |         |         |      | 0:40 |
-   | \_    Peer Discovery [0/0]      |         |         | 1:33 |      |
-   | \_    Web UI [0/0]              |         |         | 0:17 |      |
-   | \_    Main [0/0]                |         |         | 1:06 |      |
+   #+CAPTION: Clock summary at [2026-06-05 Fr 23:23]
+   | Headline                            | Time    |         |      |      |
+   |-------------------------------------+---------+---------+------+------|
+   | *Total time*                        | *21:59* |         |      |      |
+   |-------------------------------------+---------+---------+------+------|
+   | *Hertz [4/5]*                       | *21:59* |         |      |      |
+   | \_  /Components [4/5]/              |         | /21:59/ |      |      |
+   | \_    Data Model [0/0]              |         |         | 6:55 |      |
+   | \_    Data Collection [0/0]         |         |         | 3:15 |      |
+   | \_    Database [4/5]                |         |         | 5:28 |      |
+   | \_      Save client records in bulk |         |         |      | 0:10 |
+   | \_      Add connection pool         |         |         |      | 0:06 |
+   | \_      Register Clients            |         |         |      | 0:33 |
+   | \_      Switch key to timestamp     |         |         |      | 1:02 |
+   | \_    Monitor [0/0]                 |         |         | 0:46 |      |
+   | \_    Aggregate [0/0]               |         |         | 1:13 |      |
+   | \_      Client [0/0]                |         |         |      | 1:13 |
+   | \_    Peer Discovery [0/0]          |         |         | 1:33 |      |
+   | \_    Web Interface [0/0]           |         |         | 1:43 |      |
+   | \_      Handle Clients [0/0]        |         |         |      | 1:26 |
+   | \_    Main [0/0]                    |         |         | 1:06 |      |
    #+END:
-** Components [2/3]
+** Components [4/5]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -59,7 +63,7 @@
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
-*** Database [2/3]
+*** Database [4/5]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -74,6 +78,16 @@
     On second thought, nah, SQLite is just *too good* to pass.
     ... On third thought, however, I think BuntDB sounds delicious. If only to
     cut down on compile times, as it is pure Go.
+**** DONE Save client records in bulk
+     CLOSED: [2026-06-05 Fr 22:38]
+     :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 22:28]--[2026-06-05 Fr 22:38] =>  0:10
+     :END:
+**** DONE Add connection pool
+     CLOSED: [2026-06-05 Fr 21:14]
+     :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 21:08]--[2026-06-05 Fr 21:14] =>  0:06
+     :END:
 **** DONE Register Clients
      CLOSED: [2026-06-05 Fr 21:01]
      :LOGBOOK:
@@ -112,6 +126,7 @@
      :VISIBILITY: all
      :END:
      :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 22:50]--[2026-06-05 Fr 23:23] =>  0:33
      CLOCK: [2026-06-05 Fr 18:33]--[2026-06-05 Fr 18:43] =>  0:10
      CLOCK: [2026-06-05 Fr 15:20]--[2026-06-05 Fr 15:50] =>  0:30
      :END:
@@ -125,7 +140,7 @@
     CLOCK: [2026-06-03 Mi 13:31]--[2026-06-03 Mi 13:48] =>  0:17
     CLOCK: [2026-06-03 Mi 12:10]--[2026-06-03 Mi 13:03] =>  0:53
     :END:
-*** Web UI [0/0]
+*** Web Interface [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -133,6 +148,17 @@
     :LOGBOOK:
     CLOCK: [2026-06-03 Mi 11:23]--[2026-06-03 Mi 11:40] =>  0:17
     :END:
+**** Handle Clients [0/0]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: all
+     :END:
+     :LOGBOOK:
+     CLOCK: [2026-06-05 Fr 22:39]--[2026-06-05 Fr 22:48] =>  0:09
+     CLOCK: [2026-06-05 Fr 21:37]--[2026-06-05 Fr 22:27] =>  0:50
+     CLOCK: [2026-06-05 Fr 21:14]--[2026-06-05 Fr 21:36] =>  0:22
+     CLOCK: [2026-06-05 Fr 21:03]--[2026-06-05 Fr 21:08] =>  0:05
+     :END:
 *** Main [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
