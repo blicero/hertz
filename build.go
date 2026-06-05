@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 13:39:29 krylon>
+// Time-stamp: <2026-06-05 15:29:18 krylon>
 
 //go:build ignore
 
@@ -60,33 +60,40 @@ var candidates = map[string][]string{
 	"generate": {
 		"logdomain",
 		"common",
+		"common/control",
 		"model/uname",
 	},
 	"vet": {
 		"logdomain",
 		"common",
+		"common/control",
 		"model/uname",
 		"model",
 		"database",
 		"monitor",
 		"discover",
+		"client",
 	},
 	"lint": {
 		"logdomain",
 		"common",
+		"common/control",
 		"model/uname",
 		"model",
 		"database",
 		"monitor",
 		"discover",
+		"client",
 	},
 	"nilaway": {
 		"common",
+		"common/control",
 		"model/uname",
 		"model",
 		"database",
 		"monitor",
 		"discover",
+		"client",
 	},
 	"test": {
 		"collect",

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 12:34:45 krylon>
+// Time-stamp: <2026-06-05 15:31:43 krylon>
 
 // Package logdomain provides constants to identify different parts of
 // the application.
@@ -19,6 +19,7 @@ const (
 	Monitor
 	Web
 	Discover
+	Client
 )
 
 // All returns a slice of all valid IDs.
@@ -29,5 +30,6 @@ func All() []ID {
 		Monitor,
 		Web,
 		Discover,
+		Client,
 	}
 }
