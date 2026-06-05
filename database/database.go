@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 12:12:40 krylon>
+// Time-stamp: <2026-06-05 19:39:26 krylon>
 
 // Package database implements data persistence.
 package database
@@ -14,6 +14,7 @@ import (
 	"log"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/blicero/hertz/common"
 	"github.com/blicero/hertz/logdomain"
@@ -127,7 +128,7 @@ func (db *Database) RecordAdd(rec *model.FreqRecord) error {
 		}
 
 		rec.ID = id
-		kstr = fmt.Sprintf("rec:%d", id)
+		kstr = fmt.Sprintf("rec:%d", rec.Timestamp.Unix())
 
 		if buf, ex = json.Marshal(rec); ex != nil {
 			db.log.Printf("[ERROR] Cannot serialize Record: %s\n",
@@ -188,7 +189,9 @@ func (db *Database) RecordAddRemote(host string, rec *model.FreqRecord) error {
 		}
 
 		rec.ID = id
-		kstr = fmt.Sprintf("remote:%s:%d", host, id)
+		kstr = fmt.Sprintf("remote:%s:%d",
+			host,
+			rec.Timestamp.Unix())
 
 		if buf, ex = json.Marshal(rec); ex != nil {
 			db.log.Printf("[ERROR] Cannot serialize Record: %s\n",
@@ -225,3 +228,53 @@ func (db *Database) RecordAddRemote(host string, rec *model.FreqRecord) error {
 
 	return nil
 } // func (db *Database) RecordAddRemote(host string, rec *model.FreqRecord) error
+
+// RecordGet loads all Records whose timestamp is greater or equal to the given
+// time value.
+func (db *Database) RecordGet(begin time.Time) ([]*model.FreqRecord, error) {
+	var (
+		err     error
+		records []*model.FreqRecord
+		minKey  string
+	)
+
+	records = make([]*model.FreqRecord, 0, 32)
+	minKey = fmt.Sprintf("rec:%d", begin.Unix())
+
+	if err = db.db.View(func(tx *buntdb.Tx) error {
+		var (
+			ex error
+		)
+
+		if ex = tx.AscendGreaterOrEqual("", minKey, func(key, val string) bool {
+			var (
+				ex1 error
+				buf []byte
+				rec = new(model.FreqRecord)
+			)
+
+			buf = []byte(val)
+
+			if ex1 = json.Unmarshal(buf, rec); ex1 != nil {
+				db.log.Printf("[ERROR] Failed to unmarshal record %s: %s\n",
+					key,
+					ex1.Error())
+				return false
+			}
+
+			records = append(records, rec)
+			return true
+		}); ex != nil {
+			return ex
+		}
+
+		return nil
+	}); err != nil {
+		db.log.Printf("[ERROR] Failed to fetch records after %s: %s\n",
+			begin.Format(common.TimestampFormat),
+			err.Error())
+		return nil, err
+	}
+
+	return records, nil
+} // func (db *Database) RecordGet(begin time.Time) ([]*model.FreqRecord, error)
