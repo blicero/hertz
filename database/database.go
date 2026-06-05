@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 21:00:23 krylon>
+// Time-stamp: <2026-06-05 21:12:38 krylon>
 
 // Package database implements data persistence.
 package database
@@ -104,6 +104,12 @@ func (db *Database) getID(tx *buntdb.Tx) (int64, error) {
 
 	return id, nil
 } // func (db *Database) getID() (int64, error)
+
+// Close closes the Database.
+func (db *Database) Close() {
+	db.db.Close()
+	db.db = nil
+} // func (db *Database) Close()
 
 // RecordAdd adds a Record to the database.
 func (db *Database) RecordAdd(rec *model.Record) error {
