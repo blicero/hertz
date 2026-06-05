@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 20:23:28 krylon>
+// Time-stamp: <2026-06-05 21:00:23 krylon>
 
 // Package database implements data persistence.
 package database
@@ -67,6 +67,7 @@ func Open(path string) (*Database, error) {
 func (db *Database) initialize() error {
 	db.db.CreateIndex("time_idx", "rec:*", buntdb.IndexJSON("timestamp"))
 	db.db.CreateIndex("remote_idx", "remote:*", buntdb.IndexJSON("timestamp"))
+	db.db.CreateIndex("client_idx", "client:*", buntdb.IndexInt)
 	db.db.Update(func(tx *buntdb.Tx) error {
 		tx.Set("id", "0", nil)
 		return nil
@@ -213,6 +214,16 @@ func (db *Database) RecordAddRemote(host string, rec *model.Record) error {
 			return ex
 		}
 
+		var ckey = fmt.Sprintf("client:%s", host)
+		var cval = strconv.FormatInt(rec.Timestamp.Unix(), 10)
+
+		if _, _, ex = tx.Set(ckey, cval, nil); ex != nil {
+			db.log.Printf("[ERROR] Failed to update timestamp for client %s: %s\n",
+				host,
+				err.Error())
+			return ex
+		}
+
 		return nil
 	}); err != nil {
 		db.log.Printf("[ERROR] Failed to add Record: %s\n",
@@ -278,3 +289,64 @@ func (db *Database) RecordGet(begin time.Time) ([]*model.Record, error) {
 
 	return records, nil
 } // func (db *Database) RecordGet(begin time.Time) ([]*model.FreqRecord, error)
+
+// ClientRegister adds a Client to the Database.
+func (db *Database) ClientRegister(name string) (time.Time, error) {
+	var (
+		err    error
+		tstamp = time.Now()
+		ckey   = fmt.Sprintf("client:%s", name)
+		cval   = strconv.FormatInt(tstamp.Unix(), 10)
+	)
+
+	if err = db.db.Update(func(tx *buntdb.Tx) error {
+		var (
+			ex error
+		)
+
+		if _, _, ex = tx.Set(ckey, cval, nil); ex != nil {
+			return ex
+		}
+
+		return nil
+	}); err != nil {
+		db.log.Printf("[ERROR] Failed to register Client %s: %s\n",
+			name,
+			err.Error())
+	}
+
+	return tstamp.Truncate(time.Second), err
+} // func (db *Database) ClientRegister(name string) (time.Time, error)
+
+// ClientGet looks for a Client's timestamp in the Database.
+func (db *Database) ClientGet(name string) (time.Time, error) {
+	var (
+		err    error
+		tstamp time.Time
+		key    = fmt.Sprintf("client:%s", name)
+	)
+
+	if err = db.db.View(func(tx *buntdb.Tx) error {
+		var (
+			ex  error
+			val string
+			n   int64
+		)
+
+		if val, ex = tx.Get(key); ex != nil {
+			return ex
+		} else if n, ex = strconv.ParseInt(val, 10, 64); ex != nil {
+			return ex
+		}
+
+		tstamp = time.Unix(n, 0)
+		return nil
+	}); err != nil {
+		db.log.Printf("[ERROR] Failed to lookup client %s: %s\n",
+			name,
+			err.Error())
+		return tstamp, err
+	}
+
+	return tstamp, nil
+} // func (db *Database) ClientGet(name string) (time.Time, error)
