@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 21:46:14 krylon>
+// Time-stamp: <2026-06-05 22:32:13 krylon>
 
 // Package database implements data persistence.
 package database
@@ -244,7 +244,84 @@ func (db *Database) RecordAddRemote(host string, rec *model.Record) error {
 	}
 
 	return nil
-} // func (db *Database) RecordAddRemote(host string, rec *model.FreqRecord) error
+} // func (db *Database) RecordAddRemote(host string, rec *model.Record) error
+
+// RecordAddRemoteBulk adds several records at once.
+func (db *Database) RecordAddRemoteBulk(host string, records []*model.Record) error {
+	var (
+		err error
+	)
+
+	if err = db.db.Update(func(tx *buntdb.Tx) error {
+		var (
+			ex               error
+			id               int64
+			buf              []byte
+			jstr, kstr, prev string
+			replace          bool
+		)
+
+		for _, rec := range records {
+
+			if id, ex = db.getID(tx); ex != nil {
+				return ex
+			} else if id == 0 {
+				ex = errors.New("getID() returned 0")
+				db.log.Printf("[ERROR] %s\n", ex.Error())
+				return ex
+			}
+
+			rec.ID = id
+			kstr = fmt.Sprintf("remote:%s:%d",
+				host,
+				rec.Timestamp.Unix())
+
+			if buf, ex = json.Marshal(rec); ex != nil {
+				db.log.Printf("[ERROR] Cannot serialize Record: %s\n",
+					ex.Error())
+				return ex
+			}
+
+			jstr = string(buf)
+
+			if prev, replace, ex = tx.Set(kstr, jstr, nil); ex != nil {
+				db.log.Printf("[ERROR] Failed to save Record: %s\n",
+					ex.Error())
+				return ex
+			} else if replace {
+				ex = fmt.Errorf("Key %s already exists, value is %q",
+					kstr,
+					prev)
+				db.log.Printf("[CRITICAL] %s\n", ex.Error())
+				return ex
+			}
+
+			var ckey = fmt.Sprintf("client:%s", host)
+			var cval = strconv.FormatInt(rec.Timestamp.Unix(), 10)
+
+			if _, _, ex = tx.Set(ckey, cval, nil); ex != nil {
+				db.log.Printf("[ERROR] Failed to update timestamp for client %s: %s\n",
+					host,
+					err.Error())
+				return ex
+			}
+
+		}
+
+		return nil
+	}); err != nil {
+		db.log.Printf("[ERROR] Failed to add Records: %s\n",
+			err.Error())
+		return err
+	} else if common.Debug {
+		db.log.Printf("[DEBUG] Saved %d records from %s, most recent %s\n",
+			len(records),
+			host,
+			records[len(records)-1].Timestamp.Format(common.TimestampFormat))
+	}
+
+	return nil
+} // func (db *Database) RecordAddRemoteBulk(host string, rec *model.Record) error
 
 // RecordGet loads all Records whose timestamp is greater or equal to the given
 // time value.
