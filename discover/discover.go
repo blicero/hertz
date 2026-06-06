@@ -2,12 +2,13 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 18:40:05 krylon>
+// Time-stamp: <2026-06-06 13:51:03 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"sync"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/blicero/hertz/client"
 	"github.com/blicero/hertz/common"
+	"github.com/blicero/hertz/common/control"
 	"github.com/blicero/hertz/logdomain"
 	"github.com/schollz/peerdiscovery"
 	pd "github.com/schollz/peerdiscovery"
@@ -30,6 +32,7 @@ type Explorer struct {
 	lock   sync.RWMutex
 	peers  map[string]string
 	client *client.Client
+	cmdQ   chan control.Message
 }
 
 // Create creates a new Explorer.
@@ -40,6 +43,7 @@ func Create(mode string) (*Explorer, error) {
 		xp  = &Explorer{
 			mode:  mode,
 			peers: make(map[string]string),
+			cmdQ:  make(chan control.Message, 2),
 		}
 	)
 
@@ -77,14 +81,27 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 	defer xp.lock.Unlock()
 
 	if _, ok := xp.peers[info.Address]; !ok {
-		var pl = string(info.Payload)
+		var (
+			err error
+			pl  = string(info.Payload)
+		)
 		xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
 			info.Address,
 			pl)
 		xp.peers[info.Address] = pl
 
-		if xp.mode != "server" && pl == "server" {
+		if xp.mode != "server" && pl == "server" && xp.server == "" {
 			xp.server = pl
+			var srvAddr = fmt.Sprintf("http://%s:%d",
+				info.Address,
+				common.WebPort)
+			if xp.client, err = client.New(srvAddr, c.cmdQ); err != nil {
+				xp.log.Printf("[ERROR] Failed to create Client: %s\n",
+					err.Error())
+			} else {
+				xp.log.Printf("[DEBUG] Starting Client to send data to %s\n",
+					xp.server)
+			}
 		}
 	}
 } // func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered)
@@ -94,6 +111,14 @@ func (xp *Explorer) handleLostPeer(lost pd.LostPeer) {
 		lost.Address,
 		lost.LastPayload)
 	xp.lock.Lock()
+	defer xp.lock.Unlock()
+
 	delete(xp.peers, lost.Address)
-	xp.lock.Unlock()
+
+	if xp.mode != "server" && xp.server == lost.Address && xp.client != nil {
+		xp.cmdQ <- control.Message{
+			Cmd:     control.Stop,
+			Payload: "He dead, Jim",
+		}
+	}
 } // func (xp *Explorer) handleLostPeer(lost pd.LostPeer)
