@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-06 13:51:03 krylon>
+// Time-stamp: <2026-06-06 14:12:08 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -95,10 +95,11 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 			var srvAddr = fmt.Sprintf("http://%s:%d",
 				info.Address,
 				common.WebPort)
-			if xp.client, err = client.New(srvAddr, c.cmdQ); err != nil {
+			if xp.client, err = client.New(srvAddr, xp.cmdQ); err != nil {
 				xp.log.Printf("[ERROR] Failed to create Client: %s\n",
 					err.Error())
 			} else {
+				xp.client.Start()
 				xp.log.Printf("[DEBUG] Starting Client to send data to %s\n",
 					xp.server)
 			}
