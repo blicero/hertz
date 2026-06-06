@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 22:47:03 krylon>
+// Time-stamp: <2026-06-06 12:34:24 krylon>
 
 package web
 
@@ -136,6 +136,13 @@ func Create(addr string) (*Server, error) {
 	srv.router.HandleFunc(
 		"/ajax/beacon",
 		srv.handleBeacon)
+
+	// Web service endpoints
+	srv.router.HandleFunc("/ws/get_timestamp/{name:(?:\\w+)$}",
+		srv.handleClientGetTimestamp)
+
+	srv.router.HandleFunc("/ws/submit_data/{name:(?:\\w+)$}",
+		srv.handleClientData)
 
 	return srv, nil
 } // func Create(addr string) (*Server, error)
