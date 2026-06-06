@@ -2,12 +2,13 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 23:22:35 krylon>
+// Time-stamp: <2026-06-06 12:29:45 krylon>
 
 // Package client handles communication with a Server.
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -38,6 +39,7 @@ type Client struct {
 	cmdQ     <-chan control.Message
 }
 
+// New creates a new Client that will talk to the Server at the given address.
 func New(addr string, cmdQ <-chan control.Message) (*Client, error) {
 	var (
 		err error
@@ -78,12 +80,10 @@ func (c *Client) Stop() {
 
 func (c *Client) run() {
 	var (
-		err       error
-		timestamp time.Time
-		ticker    = time.NewTicker(common.ActiveTimeout)
+		err                    error
+		timestamp              time.Time
+		liveTicker, xmitTicker *time.Ticker
 	)
-
-	defer ticker.Stop()
 
 	if timestamp, err = c.getTimestamp(); err != nil {
 		c.log.Printf("[ERROR] Failed to get timestamp from %s: %s\n",
@@ -92,12 +92,26 @@ func (c *Client) run() {
 		return
 	}
 
+	liveTicker = time.NewTicker(common.ActiveTimeout)
+	defer liveTicker.Stop()
+
+	xmitTicker = time.NewTicker(common.LiveTimeout)
+	defer xmitTicker.Stop()
+
 	for c.active.Load() {
 		var msg control.Message
 
 		select {
-		case <-ticker.C:
+		case <-liveTicker.C:
 			continue
+		case <-xmitTicker.C:
+			var t time.Time
+			if t, err = c.transmitData(timestamp); err != nil {
+				c.log.Printf("[ERROR] Failed to transmit data: %s\n",
+					err.Error())
+			} else {
+				timestamp = t
+			}
 		case msg = <-c.cmdQ:
 			switch msg.Cmd {
 			case control.Start:
@@ -127,6 +141,12 @@ func (c *Client) getTimestamp() (time.Time, error) {
 
 	if resp, err = c.client.Get(uri); err != nil {
 		c.log.Printf("[ERROR] Failed to get timestamp from server: %s\n",
+			err.Error())
+		return timestamp, err
+	} else if resp == nil {
+		err = fmt.Errorf("http.Client.Get(%s) return a nil response",
+			uri)
+		c.log.Printf("[CANTHAPPEN] %s\n",
 			err.Error())
 		return timestamp, err
 	}
@@ -159,3 +179,79 @@ func (c *Client) getTimestamp() (time.Time, error) {
 
 	return timestamp, nil
 } // func (c *Client) getTimestamp() (time.Time, error)
+
+func (c *Client) transmitData(t time.Time) (time.Time, error) {
+	var (
+		err      error
+		records  []*model.Record
+		serial   []byte
+		buf      *bytes.Buffer
+		res      *http.Response
+		reply    model.SrvResponse
+		recent   time.Time
+		endpoint string
+	)
+
+	if records, err = c.db.RecordGet(t); err != nil {
+		c.log.Printf("[ERROR] Failed to get Records after %s: %s\n",
+			t.Format(common.TimestampFormat),
+			err.Error())
+		return t, err
+	} else if serial, err = json.Marshal(records); err != nil {
+		c.log.Printf("[ERROR] Cannot serialize %d Records: %s\n",
+			len(records),
+			err.Error())
+		return t, err
+	}
+
+	recent = records[len(records)-1].Timestamp
+	buf = bytes.NewBuffer(serial)
+	endpoint = fmt.Sprintf("%s/ws/submit_data/%s",
+		c.srv,
+		c.hostname)
+
+	if res, err = c.client.Post(endpoint, "application/json", buf); err != nil {
+		c.log.Printf("[ERROR] Failed to submit data to %s: %s\n",
+			c.srv,
+			err.Error())
+		return t, err
+	}
+
+	defer res.Body.Close() // nolint: nilaway
+
+	// nolint: nilaway
+	if res.StatusCode != 200 {
+		err = fmt.Errorf("HTTP request to submit data to %s failed: %s",
+			c.srv,
+			res.Status)
+		c.log.Printf("[ERROR] %s\n",
+			err.Error())
+		return t, err
+	}
+
+	buf.Reset()
+	io.Copy(buf, res.Body) // nolint: errcheck
+
+	var rstamp = strconv.FormatInt(recent.Unix(), 10)
+
+	if err = json.Unmarshal(buf.Bytes(), &reply); err != nil {
+		c.log.Printf("[ERROR] Failed to parse response from %s: %s\n%s\n\n",
+			c.srv,
+			err.Error(),
+			buf.Bytes())
+		return t, err
+	} else if !reply.Status {
+		err = fmt.Errorf("server-side error handling request to %s: %s",
+			endpoint,
+			reply.Message)
+		c.log.Printf("[ERROR] %s\n",
+			err.Error())
+		return t, err
+	} else if reply.Payload != rstamp {
+		c.log.Printf("[ERROR] Unexpected Payload in response from server: %s (expected %s)\n",
+			reply.Payload,
+			rstamp)
+	}
+
+	return recent, nil
+} // func (c *Client) transmitData(t time.Time) error
