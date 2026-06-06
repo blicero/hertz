@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-05 23:23:15 krylon>
+# Time-stamp: <2026-06-06 12:41:43 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,36 +7,36 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [4/5]
+* Hertz [4/6]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-05 Fr 23:23]
+   #+CAPTION: Clock summary at [2026-06-06 Sa 12:41]
    | Headline                            | Time    |         |      |      |
    |-------------------------------------+---------+---------+------+------|
-   | *Total time*                        | *21:59* |         |      |      |
+   | *Total time*                        | *23:13* |         |      |      |
    |-------------------------------------+---------+---------+------+------|
-   | *Hertz [4/5]*                       | *21:59* |         |      |      |
-   | \_  /Components [4/5]/              |         | /21:59/ |      |      |
+   | *Hertz [4/6]*                       | *23:13* |         |      |      |
+   | \_  /Components [4/6]/              |         | /23:13/ |      |      |
    | \_    Data Model [0/0]              |         |         | 6:55 |      |
    | \_    Data Collection [0/0]         |         |         | 3:15 |      |
-   | \_    Database [4/5]                |         |         | 5:28 |      |
+   | \_    Database [4/6]                |         |         | 5:28 |      |
    | \_      Save client records in bulk |         |         |      | 0:10 |
    | \_      Add connection pool         |         |         |      | 0:06 |
    | \_      Register Clients            |         |         |      | 0:33 |
    | \_      Switch key to timestamp     |         |         |      | 1:02 |
    | \_    Monitor [0/0]                 |         |         | 0:46 |      |
-   | \_    Aggregate [0/0]               |         |         | 1:13 |      |
-   | \_      Client [0/0]                |         |         |      | 1:13 |
+   | \_    Aggregate [0/0]               |         |         | 2:16 |      |
+   | \_      Client [0/0]                |         |         |      | 2:16 |
    | \_    Peer Discovery [0/0]          |         |         | 1:33 |      |
-   | \_    Web Interface [0/0]           |         |         | 1:43 |      |
-   | \_      Handle Clients [0/0]        |         |         |      | 1:26 |
+   | \_    Web Interface [0/0]           |         |         | 1:54 |      |
+   | \_      Handle Clients [0/0]        |         |         |      | 1:37 |
    | \_    Main [0/0]                    |         |         | 1:06 |      |
    #+END:
-** Components [4/5]
+** Components [4/6]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -63,7 +63,7 @@
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
-*** Database [4/5]
+*** Database [4/6]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -78,6 +78,10 @@
     On second thought, nah, SQLite is just *too good* to pass.
     ... On third thought, however, I think BuntDB sounds delicious. If only to
     cut down on compile times, as it is pure Go.
+**** MEDITATE Back to SQLite?
+     I am having second thoughts about my choice of database engine. I think,
+     SQLite might be a better fit.  BuntDB is very spartan, and things that
+     would be straightforward with SQLite become pretty tedious.
 **** DONE Save client records in bulk
      CLOSED: [2026-06-05 Fr 22:38]
      :LOGBOOK:
@@ -126,6 +130,7 @@
      :VISIBILITY: all
      :END:
      :LOGBOOK:
+     CLOCK: [2026-06-06 Sa 11:27]--[2026-06-06 Sa 12:30] =>  1:03
      CLOCK: [2026-06-05 Fr 22:50]--[2026-06-05 Fr 23:23] =>  0:33
      CLOCK: [2026-06-05 Fr 18:33]--[2026-06-05 Fr 18:43] =>  0:10
      CLOCK: [2026-06-05 Fr 15:20]--[2026-06-05 Fr 15:50] =>  0:30
@@ -146,6 +151,7 @@
     :VISIBILITY: all
     :END:
     :LOGBOOK:
+    CLOCK: [2026-06-06 Sa 12:30]--[2026-06-06 Sa 12:30] =>  0:00
     CLOCK: [2026-06-03 Mi 11:23]--[2026-06-03 Mi 11:40] =>  0:17
     :END:
 **** Handle Clients [0/0]
@@ -154,6 +160,7 @@
      :VISIBILITY: all
      :END:
      :LOGBOOK:
+     CLOCK: [2026-06-06 Sa 12:30]--[2026-06-06 Sa 12:41] =>  0:11
      CLOCK: [2026-06-05 Fr 22:39]--[2026-06-05 Fr 22:48] =>  0:09
      CLOCK: [2026-06-05 Fr 21:37]--[2026-06-05 Fr 22:27] =>  0:50
      CLOCK: [2026-06-05 Fr 21:14]--[2026-06-05 Fr 21:36] =>  0:22
