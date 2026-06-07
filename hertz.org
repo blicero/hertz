@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-06 12:41:43 krylon>
+# Time-stamp: <2026-06-07 16:32:17 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,13 +14,13 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-06 Sa 12:41]
+   #+CAPTION: Clock summary at [2026-06-07 So 16:32]
    | Headline                            | Time    |         |      |      |
    |-------------------------------------+---------+---------+------+------|
-   | *Total time*                        | *23:13* |         |      |      |
+   | *Total time*                        | *23:43* |         |      |      |
    |-------------------------------------+---------+---------+------+------|
-   | *Hertz [4/6]*                       | *23:13* |         |      |      |
-   | \_  /Components [4/6]/              |         | /23:13/ |      |      |
+   | *Hertz [4/6]*                       | *23:43* |         |      |      |
+   | \_  /Components [4/6]/              |         | /23:43/ |      |      |
    | \_    Data Model [0/0]              |         |         | 6:55 |      |
    | \_    Data Collection [0/0]         |         |         | 3:15 |      |
    | \_    Database [4/6]                |         |         | 5:28 |      |
@@ -29,8 +29,8 @@
    | \_      Register Clients            |         |         |      | 0:33 |
    | \_      Switch key to timestamp     |         |         |      | 1:02 |
    | \_    Monitor [0/0]                 |         |         | 0:46 |      |
-   | \_    Aggregate [0/0]               |         |         | 2:16 |      |
-   | \_      Client [0/0]                |         |         |      | 2:16 |
+   | \_    Aggregate [0/0]               |         |         | 2:46 |      |
+   | \_      Client [0/0]                |         |         |      | 2:46 |
    | \_    Peer Discovery [0/0]          |         |         | 1:33 |      |
    | \_    Web Interface [0/0]           |         |         | 1:54 |      |
    | \_      Handle Clients [0/0]        |         |         |      | 1:37 |
@@ -130,6 +130,7 @@
      :VISIBILITY: all
      :END:
      :LOGBOOK:
+     CLOCK: [2026-06-07 So 16:01]--[2026-06-07 So 16:31] =>  0:30
      CLOCK: [2026-06-06 Sa 11:27]--[2026-06-06 Sa 12:30] =>  1:03
      CLOCK: [2026-06-05 Fr 22:50]--[2026-06-05 Fr 23:23] =>  0:33
      CLOCK: [2026-06-05 Fr 18:33]--[2026-06-05 Fr 18:43] =>  0:10
