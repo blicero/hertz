@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-06 12:29:45 krylon>
+// Time-stamp: <2026-06-07 16:20:12 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -109,6 +110,8 @@ func (c *Client) run() {
 		case <-liveTicker.C:
 			continue
 		case <-xmitTicker.C:
+			c.log.Printf("[DEBUG] About to send data to %s\n",
+				c.srv)
 			var t time.Time
 			if t, err = c.transmitData(timestamp); err != nil {
 				c.log.Printf("[ERROR] Failed to transmit data: %s\n",
@@ -117,6 +120,8 @@ func (c *Client) run() {
 				timestamp = t
 			}
 		case msg = <-c.cmdQ:
+			c.log.Printf("[DEBUG] Received control message: %s\n",
+				msg.Cmd)
 			switch msg.Cmd {
 			case control.Start:
 			case control.Stop:
@@ -139,7 +144,7 @@ func (c *Client) getTimestamp() (time.Time, error) {
 		timestamp time.Time
 	)
 
-	uri = fmt.Sprintf("http://%s/ws/get_timestamp/%s",
+	uri = fmt.Sprintf("%s/ws/get_timestamp/%s",
 		c.srv,
 		c.hostname)
 
@@ -214,6 +219,10 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		c.srv,
 		c.hostname)
 
+	c.log.Printf("[DEBUG] Sending %d records to %s\n",
+		len(records),
+		c.srv)
+
 	if res, err = c.client.Post(endpoint, "application/json", buf); err != nil {
 		c.log.Printf("[ERROR] Failed to submit data to %s: %s\n",
 			c.srv,
@@ -255,6 +264,9 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		c.log.Printf("[ERROR] Unexpected Payload in response from server: %s (expected %s)\n",
 			reply.Payload,
 			rstamp)
+	} else {
+		c.log.Printf("[DEBUG] Server replied: %#v\n",
+			reply)
 	}
 
 	return recent, nil
