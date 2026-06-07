@@ -63,6 +63,10 @@ func New(addr string, cmdQ <-chan control.Message) (*Client, error) {
 
 	c.hostname, _ = os.Hostname()
 
+	if idx := strings.Index(c.hostname, "."); idx > 0 {
+		c.hostname = c.hostname[:idx]
+	}
+
 	return c, nil
 } // func New(addr string, cmdQ <-chan control.Message) (*Client, error)
 
