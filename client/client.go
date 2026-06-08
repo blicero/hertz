@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-07 16:20:12 krylon>
+// Time-stamp: <2026-06-08 14:01:17 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -15,6 +15,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -201,7 +202,7 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		endpoint string
 	)
 
-	if records, err = c.db.RecordGet(t); err != nil {
+	if records, err = c.loadData(t); err != nil {
 		c.log.Printf("[ERROR] Failed to get Records after %s: %s\n",
 			t.Format(common.TimestampFormat),
 			err.Error())
@@ -271,3 +272,67 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 
 	return recent, nil
 } // func (c *Client) transmitData(t time.Time) error
+
+func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
+	var (
+		err   error
+		dirh  *os.File
+		files []string
+		data  []*model.Record
+	)
+
+	if dirh, err = os.Open(common.SpoolDir); err != nil {
+		c.log.Printf("[CRITICAL] Cannot open spool directory %s: %s\n",
+			common.SpoolDir,
+			err.Error())
+		return nil, err
+	}
+
+	defer dirh.Close() // nolint: errcheck
+
+	if files, err = dirh.Readdirnames(-1); err != nil {
+		c.log.Printf("[CRITICAL] Cannot read contents of spool directory %s: %s\n",
+			common.SpoolDir,
+			err.Error())
+		return nil, err
+	}
+
+	data = make([]*model.Record, 0, len(files))
+
+	for _, f := range files {
+		var (
+			path, tstr string
+			timestamp  int64
+			buf        []byte
+			rec        = new(model.Record)
+		)
+
+		tstr = path[:16]
+		if timestamp, err = strconv.ParseInt(tstr, 16, 64); err != nil {
+			c.log.Printf("[ERROR] Cannot parse timestamp from filename %q: %s\n",
+				path,
+				err.Error())
+			return nil, err
+		} else if time.Unix(timestamp, 0).Before(t) {
+			continue
+		}
+
+		path = filepath.Join(common.SpoolDir, f)
+
+		if buf, err = os.ReadFile(path); err != nil {
+			c.log.Printf("[ERROR] Cannot read %s: %s\n",
+				path,
+				err.Error())
+			return nil, err
+		} else if err = json.Unmarshal(buf, &rec); err != nil {
+			c.log.Printf("[ERROR] Cannot parse Record from %s: %s\n",
+				path,
+				err.Error())
+			return nil, err
+		}
+
+		data = append(data, rec)
+	}
+
+	return data, nil
+} // func (c *Client) loadData(t time.Time) ([]*model.Record, error)

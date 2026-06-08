@@ -2,21 +2,24 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 20:23:28 krylon>
+// Time-stamp: <2026-06-08 14:23:09 krylon>
 
 // Package monitor implements the process of collecting and storing data
 // in a regular manner.
 package monitor
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/blicero/hertz/collect"
 	"github.com/blicero/hertz/common"
-	"github.com/blicero/hertz/database"
 	"github.com/blicero/hertz/logdomain"
 	"github.com/blicero/hertz/model"
 )
@@ -24,7 +27,6 @@ import (
 // Monitor collects data and stores it to the database.
 type Monitor struct {
 	log      *log.Logger
-	db       *database.Database
 	probe    *collect.Probe
 	active   atomic.Bool
 	wg       sync.WaitGroup
@@ -41,10 +43,6 @@ func Create(tickSeconds int64) (*Monitor, error) {
 	)
 
 	if mon.log, err = common.GetLogger(logdomain.Monitor); err != nil {
-		return nil, err
-	} else if mon.db, err = database.Open(common.DbPath); err != nil {
-		mon.log.Printf("[CRITICAL] Cannot open Database: %s\n",
-			err.Error())
 		return nil, err
 	} else if mon.probe, err = collect.New(); err != nil {
 		mon.log.Printf("[CRITICAL] Cannot open Probe: %s\n",
@@ -90,7 +88,7 @@ func (mon *Monitor) process() {
 		if rec, err = mon.probe.Collect(); err != nil {
 			mon.log.Printf("[ERROR] Cannot gather data: %s\n",
 				err.Error())
-		} else if err = mon.db.RecordAdd(rec); err != nil {
+		} else if err = mon.recordStore(rec); err != nil {
 			mon.log.Printf("[ERROR] Failed to save record to DB: %s\n",
 				err.Error())
 		}
@@ -98,3 +96,39 @@ func (mon *Monitor) process() {
 		<-ticker.C
 	}
 } // func (mon *Monitor) process()
+
+func (mon *Monitor) recordStore(rec *model.Record) error {
+	var (
+		err  error
+		path string
+		buf  []byte
+		fh   *os.File
+	)
+
+	path = filepath.Join(
+		common.SpoolDir,
+		fmt.Sprintf("%016x.json", rec.Timestamp.Unix()),
+	)
+
+	if buf, err = json.Marshal(buf); err != nil {
+		mon.log.Printf("[ERROR] Cannot serialize Record: %s\n",
+			err.Error())
+		return err
+	} else if fh, err = os.Create(path); err != nil {
+		mon.log.Printf("[ERROR] Cannot open %s: %s\n",
+			path,
+			err.Error())
+		return err
+	}
+
+	defer fh.Close() // nolint: errcheck
+
+	if _, err = fh.Write(buf); err != nil {
+		mon.log.Printf("[ERROR] Failed to write Record to %s: %s\n",
+			path,
+			err.Error())
+		return err
+	}
+
+	return nil
+} // func (mon *Monitor) recordStore(rec *model.Record) error

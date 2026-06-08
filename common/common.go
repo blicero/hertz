@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 03. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-07 16:33:39 krylon>
+// Time-stamp: <2026-06-08 13:05:22 krylon>
 
 package common
 
@@ -99,7 +99,11 @@ var LogPath = filepath.Join(BaseDir, fmt.Sprintf("%s.log", strings.ToLower(AppNa
 var DbPath = filepath.Join(BaseDir, fmt.Sprintf("%s.db", strings.ToLower(AppName)))
 
 // CachePath is the directory where the various cache stores live.
-var CachePath = filepath.Join(BaseDir, "cache.d")
+// var CachePath = filepath.Join(BaseDir, "cache.d")
+
+// SpoolDir is the directory where Clients store their data
+// before they send it to the Server.
+var SpoolDir = filepath.Join(BaseDir, "spool")
 
 // CfgPath is the path to the config file (should we ever adopt using one).
 var CfgPath = filepath.Join(BaseDir, fmt.Sprintf("%s.toml", strings.ToLower(AppName)))
@@ -136,13 +140,13 @@ func InitApp() (e error) {
 
 	LogPath = filepath.Join(BaseDir, fmt.Sprintf("%s.log", strings.ToLower(AppName)))
 	DbPath = filepath.Join(BaseDir, fmt.Sprintf("%s.db", strings.ToLower(AppName)))
-	CachePath = filepath.Join(BaseDir, "cache.d")
 	CfgPath = filepath.Join(BaseDir, fmt.Sprintf("%s.toml", strings.ToLower(AppName)))
 	BlacklistPath = filepath.Join(BaseDir, "blacklist.db")
+	SpoolDir = filepath.Join(BaseDir, "spool")
 
-	if err = os.Mkdir(CachePath, 0700); err != nil && !os.IsExist(err) {
+	if err = os.Mkdir(SpoolDir, 0700); err != nil && !os.IsExist(err) {
 		return fmt.Errorf("error creating cache directory %s: %s",
-			CachePath,
+			SpoolDir,
 			err.Error())
 	}
 
@@ -164,7 +168,7 @@ func SetBaseDir(path string) error {
 	BaseDir = path
 	LogPath = filepath.Join(BaseDir, fmt.Sprintf("%s.log", strings.ToLower(AppName)))
 	DbPath = filepath.Join(BaseDir, fmt.Sprintf("%s.db", strings.ToLower(AppName)))
-	CachePath = filepath.Join(BaseDir, "cache.d")
+	SpoolDir = filepath.Join(BaseDir, "spool")
 	CfgPath = filepath.Join(BaseDir, fmt.Sprintf("%s.toml", strings.ToLower(AppName)))
 	BlacklistPath = filepath.Join(BaseDir, "blacklist.db")
 
