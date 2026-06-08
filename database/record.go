@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 12:51:10 krylon>
+// Time-stamp: <2026-06-08 14:21:53 krylon>
 
 package database
 
@@ -77,6 +77,57 @@ EXEC_QUERY:
 
 	return nil
 } // func (db *Database) RecordAdd(record *model.Record) error
+
+// RecordAddBulk adds a sequence of Records from a single Host to the database
+// in a single transaction.
+func (db *Database) RecordAddBulk(name string, data []*model.Record) error {
+	var (
+		err     error
+		host    *model.Host
+		tx      *sql.Tx
+		success bool
+	)
+
+	if tx, err = db.db.Begin(); err != nil {
+		db.log.Printf("[ERROR] Cannot start transaction: %s\n",
+			err.Error())
+		return err
+	}
+
+	defer func() {
+		if success {
+			tx.Commit() // nolint: errcheck
+		} else {
+			tx.Rollback() // nolint: errcheck
+		}
+	}()
+
+	if host, err = db.HostGetByName(name); err != nil {
+		db.log.Printf("[ERROR] Error looking for Host %s: %s\n",
+			name,
+			err.Error())
+		return err
+	} else if host == nil {
+		host = &model.Host{Name: name}
+		if err = db.HostAdd(host); err != nil {
+			db.log.Printf("[ERROR] Cannot add Host %s: %s\n",
+				name,
+				err.Error())
+			return err
+		}
+	}
+
+	for _, rec := range data {
+		rec.HostID = host.ID
+		if err = db.RecordAdd(rec); err != nil {
+			db.log.Printf("[ERROR] Cannot store data: %s\n",
+				err.Error())
+			return err
+		}
+	}
+
+	return nil
+} // func (db *Database) RecordAddBulk(name string, data []*model.Record) error
 
 // RecordGetByHost loads up to <limit> Records from the given Host, ordered
 // by their timestamps in descending order.
