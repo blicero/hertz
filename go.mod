@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/logutils v1.0.0
+	github.com/mattn/go-sqlite3 v1.14.45
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/schollz/peerdiscovery v1.7.6
 	github.com/tidwall/buntdb v1.3.2

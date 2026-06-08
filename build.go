@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-06-06 12:41:09 krylon>
+// Time-stamp: <2026-06-08 12:09:59 krylon>
 
 //go:build ignore
 
@@ -62,6 +62,7 @@ var candidates = map[string][]string{
 		"common",
 		"common/control",
 		"model/uname",
+		"database/query",
 	},
 	"vet": {
 		"logdomain",
@@ -70,6 +71,7 @@ var candidates = map[string][]string{
 		"model/uname",
 		"model",
 		"database",
+		"database/query",
 		"monitor",
 		"discover",
 		"client",
@@ -82,6 +84,7 @@ var candidates = map[string][]string{
 		"model/uname",
 		"model",
 		"database",
+		"database/query",
 		"monitor",
 		"discover",
 		"client",
@@ -93,6 +96,7 @@ var candidates = map[string][]string{
 		"model/uname",
 		"model",
 		"database",
+		"database/query",
 		"monitor",
 		"discover",
 		"client",
