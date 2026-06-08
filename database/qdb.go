@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 12:18:00 krylon>
+// Time-stamp: <2026-06-08 12:52:46 krylon>
 
 package database
 
@@ -55,8 +55,8 @@ SELECT
     timestamp,
     freq
 FROM record
-ORDER BY timestamp DESC
 WHERE timestamp BETWEEN ? AND ?
+ORDER BY timestamp DESC
 `,
 	query.RecordGetByHostPeriod: `
 SELECT
@@ -64,7 +64,7 @@ SELECT
     timestamp,
     freq
 FROM record
-ORDER BY timestamp DESC
 WHERE host_id = ? AND timestamp BETWEEN ? AND ?
+ORDER BY timestamp DESC
 `,
 }

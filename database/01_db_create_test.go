@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 20:00:43 krylon>
+// Time-stamp: <2026-06-08 12:46:59 krylon>
 
 package database
 
@@ -22,3 +22,19 @@ func TestDBCreate(t *testing.T) {
 			err.Error())
 	}
 } // func TestDBCreate(t *testing.T)
+
+func TestDBQueries(t *testing.T) {
+	var err error
+
+	if tdb == nil {
+		t.SkipNow()
+	}
+
+	for qid := range qdb {
+		if _, err = tdb.getQuery(qid); err != nil {
+			t.Errorf("Failed to prepare query %s: %s",
+				qid,
+				err.Error())
+		}
+	}
+} // func TestDBQueries(t *testing.T)

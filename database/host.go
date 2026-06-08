@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 12:19:03 krylon>
+// Time-stamp: <2026-06-08 12:28:12 krylon>
 
 package database
 
@@ -210,7 +210,7 @@ EXEC_QUERY:
 	defer rows.Close() // nolint: errcheck,gosec
 	var hosts = make([]*model.Host, 0)
 
-	if rows.Next() {
+	for rows.Next() {
 		var (
 			lastContact int64
 			host        = new(model.Host)

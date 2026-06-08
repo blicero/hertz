@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 11:45:46 krylon>
+// Time-stamp: <2026-06-08 12:50:47 krylon>
 
 package database
 
@@ -11,7 +11,7 @@ var qinit = []string{
 CREATE TABLE host (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
-    last_contact INTEGER NOT NULL DEFAULT 0,
+    last_contact INTEGER NOT NULL DEFAULT 0
 ) STRICT
 `,
 	"CREATE INDEX host_name_idx ON host (name)",
