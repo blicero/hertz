@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-08 11:30:20 krylon>
+# Time-stamp: <2026-06-08 12:55:39 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,39 +7,42 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [4/6]
+* Hertz [9/10]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-08 Mo 11:30]
-   | Headline                            | Time      |         |      |      |
-   |-------------------------------------+-----------+---------+------+------|
-   | *Total time*                        | *1d 0:12* |         |      |      |
-   |-------------------------------------+-----------+---------+------+------|
-   | *Hertz [4/6]*                       | *1d 0:12* |         |      |      |
-   | \_  /Components [4/6]/              |           | /23:59/ |      |      |
-   | \_    Data Model [0/0]              |           |         | 6:55 |      |
-   | \_    Data Collection [0/0]         |           |         | 3:15 |      |
-   | \_    Database [4/6]                |           |         | 5:28 |      |
-   | \_      Save client records in bulk |           |         |      | 0:10 |
-   | \_      Add connection pool         |           |         |      | 0:06 |
-   | \_      Register Clients            |           |         |      | 0:33 |
-   | \_      Switch key to timestamp     |           |         |      | 1:02 |
-   | \_    Monitor [0/0]                 |           |         | 0:46 |      |
-   | \_    Aggregate [0/0]               |           |         | 2:46 |      |
-   | \_      Client [0/0]                |           |         |      | 2:46 |
-   | \_    Peer Discovery [0/0]          |           |         | 1:33 |      |
-   | \_    Web Interface [0/1]           |           |         | 2:10 |      |
-   | \_      Handle Clients [0/0]        |           |         |      | 1:37 |
-   | \_      Overview [0/0]              |           |         |      | 0:16 |
-   | \_    Main [0/0]                    |           |         | 1:06 |      |
-   | \_  /Bugs [0/1]/                    |           | /0:13/  |      |      |
-   | \_    Panic in Database             |           |         | 0:13 |      |
+   #+CAPTION: Clock summary at [2026-06-08 Mo 12:55]
+   | Headline                            | Time      |           |      |      |      |
+   |-------------------------------------+-----------+-----------+------+------+------|
+   | *Total time*                        | *1d 1:08* |           |      |      |      |
+   |-------------------------------------+-----------+-----------+------+------+------|
+   | *Hertz [9/10]*                      | *1d 1:08* |           |      |      |      |
+   | \_  /Components [8/9]/              |           | /1d 0:55/ |      |      |      |
+   | \_    Data Model [0/0]              |           |           | 6:55 |      |      |
+   | \_    Data Collection [0/0]         |           |           | 3:15 |      |      |
+   | \_    Database [8/8]                |           |           | 6:24 |      |      |
+   | \_      Back to SQLite? [3/3]       |           |           |      | 0:56 |      |
+   | \_        Schema                    |           |           |      |      | 0:24 |
+   | \_        Testing                   |           |           |      |      | 0:11 |
+   | \_      Save client records in bulk |           |           |      | 0:10 |      |
+   | \_      Add connection pool         |           |           |      | 0:06 |      |
+   | \_      Register Clients            |           |           |      | 0:33 |      |
+   | \_      Switch key to timestamp     |           |           |      | 1:02 |      |
+   | \_    Monitor [0/0]                 |           |           | 0:46 |      |      |
+   | \_    Aggregate [0/0]               |           |           | 2:46 |      |      |
+   | \_      Client [0/0]                |           |           |      | 2:46 |      |
+   | \_    Peer Discovery [0/0]          |           |           | 1:33 |      |      |
+   | \_    Web Interface [0/1]           |           |           | 2:10 |      |      |
+   | \_      Handle Clients [0/0]        |           |           |      | 1:37 |      |
+   | \_      Overview [0/0]              |           |           |      | 0:16 |      |
+   | \_    Main [0/0]                    |           |           | 1:06 |      |      |
+   | \_  /Bugs [1/1]/                    |           | /0:13/    |      |      |      |
+   | \_    Panic in Database             |           |           | 0:13 |      |      |
    #+END:
-** Components [4/6]
+** Components [8/9]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -66,7 +69,7 @@
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
-*** Database [4/6]
+*** Database [8/8]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -81,10 +84,30 @@
     On second thought, nah, SQLite is just *too good* to pass.
     ... On third thought, however, I think BuntDB sounds delicious. If only to
     cut down on compile times, as it is pure Go.
-**** MEDITATE Back to SQLite?
+**** DONE Back to SQLite? [3/3]
+     CLOSED: [2026-06-08 Mo 12:54]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: all
+     :END:
+     :LOGBOOK:
+     CLOCK: [2026-06-08 Mo 12:22]--[2026-06-08 Mo 12:43] =>  0:21
+     :END:
      I am having second thoughts about my choice of database engine. I think,
      SQLite might be a better fit.  BuntDB is very spartan, and things that
      would be straightforward with SQLite become pretty tedious.
+***** DONE Schema
+      CLOSED: [2026-06-08 Mo 11:55]
+      :LOGBOOK:
+      CLOCK: [2026-06-08 Mo 11:31]--[2026-06-08 Mo 11:55] =>  0:24
+      :END:
+***** DONE Queries
+      CLOSED: [2026-06-08 Mo 11:56]
+***** DONE Testing
+      CLOSED: [2026-06-08 Mo 12:54]
+      :LOGBOOK:
+      CLOCK: [2026-06-08 Mo 12:43]--[2026-06-08 Mo 12:54] =>  0:11
+      :END:
 **** DONE Save client records in bulk
      CLOSED: [2026-06-05 Fr 22:38]
      :LOGBOOK:
@@ -108,7 +131,6 @@
      After studying BuntDB's API a little, I think it would be better to use
      timestamps for keys, because despite having Indices, I cannot search per
      se.
-**** TODO Export
 *** Monitor [0/0]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
@@ -193,12 +215,13 @@
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
-** Bugs [0/1]
+** Bugs [1/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
-*** TODO Panic in Database 
+*** DONE Panic in Database 
+    CLOSED: [2026-06-08 Mo 12:54]
     :LOGBOOK:
     CLOCK: [2026-06-08 Mo 11:02]--[2026-06-08 Mo 11:15] =>  0:13
     :END:
