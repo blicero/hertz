@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-06 12:34:24 krylon>
+// Time-stamp: <2026-06-08 14:25:32 krylon>
 
 package web
 
@@ -272,7 +272,7 @@ func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Reque
 		err       error
 		vars      map[string]string
 		name, msg string
-		timestamp time.Time
+		host      *model.Host
 		db        *database.Database
 
 		buf  []byte
@@ -287,7 +287,7 @@ func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Reque
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
 
-	if timestamp, err = db.ClientGet(name); err != nil {
+	if host, err = db.HostGetByName(name); err != nil {
 		if errors.Is(err, buntdb.ErrNotFound) {
 			data.Payload = "0"
 			data.Status = true
@@ -298,8 +298,11 @@ func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Reque
 			srv.log.Printf("[ERROR] %s\n", msg)
 			data.Message = msg
 		}
+	} else if host == nil {
+		data.Payload = "0"
+		data.Status = true
 	} else {
-		data.Payload = strconv.FormatInt(timestamp.Unix(), 10)
+		data.Payload = strconv.FormatInt(host.LastContact.Unix(), 10)
 		data.Status = true
 	}
 
@@ -354,7 +357,7 @@ func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
 
-	if err = db.RecordAddRemoteBulk(name, records); err != nil {
+	if err = db.RecordAddBulk(name, records); err != nil {
 		msg = fmt.Sprintf("Failed to store %d records from %s: %s",
 			len(records),
 			name,
