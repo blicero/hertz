@@ -1,0 +1,32 @@
+{{ define "hosts" }}
+{{/* Created on 08. 06. 2026 */}}
+{{/* Time-stamp: <2026-06-08 11:29:11 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <div class="body content">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th># CPUs</th>
+            <th>Last Seen</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .Hosts }}
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}
