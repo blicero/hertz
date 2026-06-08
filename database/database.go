@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-05 22:32:13 krylon>
+// Time-stamp: <2026-06-08 11:11:12 krylon>
 
 // Package database implements data persistence.
 package database
@@ -112,12 +112,20 @@ func (db *Database) Close() {
 } // func (db *Database) Close()
 
 // RecordAdd adds a Record to the database.
-func (db *Database) RecordAdd(rec *model.Record) error {
+func (db *Database) RecordAdd(rec *model.Record) (xxx error) {
 	var (
 		err error
 	)
 
-	if err = db.db.Update(func(tx *buntdb.Tx) error {
+	defer func() {
+		if ex := recover(); ex != nil {
+			err = fmt.Errorf("panic in RecordAdd: %s",
+				ex)
+			xxx = err
+		}
+	}()
+
+	if err = db.db.Update(func(tx *buntdb.Tx) (e error) {
 		var (
 			ex               error
 			id               int64
@@ -125,6 +133,15 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 			jstr, kstr, prev string
 			replace          bool
 		)
+
+		defer func() {
+			if ex := recover(); ex != nil {
+				e = fmt.Errorf("Panic in RecordAdd: %s",
+					ex)
+				db.log.Printf("[CRITICAL] %s\n",
+					e.Error())
+			}
+		}()
 
 		if id, ex = db.getID(tx); ex != nil {
 			return ex
