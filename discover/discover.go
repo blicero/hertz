@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-06 14:12:08 krylon>
+// Time-stamp: <2026-06-08 15:12:13 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -108,15 +108,19 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 } // func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered)
 
 func (xp *Explorer) handleLostPeer(lost pd.LostPeer) {
-	xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
+	xp.log.Printf("[DEBUG] Peer %s disappeared -- %s\n",
 		lost.Address,
 		lost.LastPayload)
+
 	xp.lock.Lock()
 	defer xp.lock.Unlock()
 
 	delete(xp.peers, lost.Address)
 
 	if xp.mode != "server" && xp.server == lost.Address && xp.client != nil {
+		xp.log.Printf("[DEBUG] Lost touch with server %s, stopping Client\n",
+			xp.server)
+		xp.server = ""
 		xp.cmdQ <- control.Message{
 			Cmd:     control.Stop,
 			Payload: "He dead, Jim",
