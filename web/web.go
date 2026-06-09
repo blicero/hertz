@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 11:36:42 krylon>
+// Time-stamp: <2026-06-09 12:30:45 krylon>
 
 package web
 
@@ -130,6 +130,7 @@ func Create(addr string) (*Server, error) {
 	srv.router.HandleFunc("/favicon.ico", srv.handleFavIco)
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
+	srv.router.HandleFunc("/host/all", srv.handleHostsView)
 
 	// AJAX Handlers
 	srv.router.HandleFunc(
@@ -228,6 +229,51 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 		srv.sendErrorMessage(w, msg)
 	}
 } // func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleHostsView(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+	const tmplName = "hosts"
+
+	var (
+		err  error
+		msg  string
+		db   *database.Database
+		tmpl *template.Template
+		data = tmplDataHosts{
+			tmplDataBase: tmplDataBase{
+				Title: "Main",
+				Debug: common.Debug,
+				URL:   r.URL.String(),
+			},
+		}
+	)
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Hosts, err = db.HostGetAll(); err != nil {
+		msg = fmt.Sprintf("HostGetAll failed: %s\n",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleHostsView(w http.ResponseWriter, r *http.Request)
 
 //////////////////////////////////////////////////////////////////////////////
 /// Handle AJAX //////////////////////////////////////////////////////////////
