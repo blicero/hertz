@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 11:29:57 krylon>
+// Time-stamp: <2026-06-09 11:53:55 krylon>
 
 // Package monitor implements the process of collecting and storing data
 // in a regular manner.
@@ -110,9 +110,6 @@ func (mon *Monitor) recordStore(rec *model.Record) error {
 		err = errors.New("Record is nil")
 		mon.log.Printf("[ERROR] %s\n", err.Error())
 		return err
-	} else {
-		mon.log.Printf("[DEBUG] Save one record to file: %#v\n",
-			rec)
 	}
 
 	path = filepath.Join(
