@@ -2,13 +2,14 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 14:21:53 krylon>
+// Time-stamp: <2026-06-09 11:55:22 krylon>
 
 package database
 
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -24,7 +25,16 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 		stmt *sql.Stmt
 	)
 
-	if stmt, err = db.getQuery(qid); err != nil {
+	if rec == nil {
+		err = errors.New("Record is nil")
+		db.log.Printf("[ERROR] %s\n", err.Error())
+		return err
+	} else if rec.HostID == 0 {
+		err = fmt.Errorf("Record has invalid HostID: %#v\n",
+			rec)
+		db.log.Printf("[ERROR] %s\n", err.Error())
+		return err
+	} else if stmt, err = db.getQuery(qid); err != nil {
 		db.log.Printf("[ERROR] Failed to prepare query %s: %s\n",
 			qid,
 			err.Error())
@@ -44,7 +54,7 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 		return err
 	}
 EXEC_QUERY:
-	if rows, err = stmt.Query(rec.HostID, rec.Timestamp, string(freq)); err != nil {
+	if rows, err = stmt.Query(rec.HostID, rec.Timestamp.Unix(), string(freq)); err != nil {
 		if worthARetry(err) {
 			waitForRetry()
 			goto EXEC_QUERY
@@ -114,6 +124,10 @@ func (db *Database) RecordAddBulk(name string, data []*model.Record) error {
 				name,
 				err.Error())
 			return err
+		} else if host.ID == 0 {
+			db.log.Printf("[CANTHAPPEN] Host %s has no ID\n",
+				name)
+			return fmt.Errorf("host %s has no ID", name)
 		}
 	}
 
@@ -124,6 +138,10 @@ func (db *Database) RecordAddBulk(name string, data []*model.Record) error {
 				err.Error())
 			return err
 		}
+	}
+
+	if err == nil {
+		success = true
 	}
 
 	return nil
