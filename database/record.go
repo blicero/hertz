@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 11:55:22 krylon>
+// Time-stamp: <2026-06-09 12:57:04 krylon>
 
 package database
 
@@ -30,7 +30,7 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 		db.log.Printf("[ERROR] %s\n", err.Error())
 		return err
 	} else if rec.HostID == 0 {
-		err = fmt.Errorf("Record has invalid HostID: %#v\n",
+		err = fmt.Errorf("record has invalid HostID: %#v",
 			rec)
 		db.log.Printf("[ERROR] %s\n", err.Error())
 		return err
@@ -53,6 +53,7 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 			err.Error())
 		return err
 	}
+
 EXEC_QUERY:
 	if rows, err = stmt.Query(rec.HostID, rec.Timestamp.Unix(), string(freq)); err != nil {
 		if worthARetry(err) {
