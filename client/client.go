@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 14:01:17 krylon>
+// Time-stamp: <2026-06-09 11:20:08 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -34,6 +34,7 @@ type Client struct {
 	log      *log.Logger
 	srv      string
 	hostname string
+	interval time.Duration
 	active   atomic.Bool
 	client   *http.Client
 	wg       *sync.WaitGroup
@@ -42,7 +43,7 @@ type Client struct {
 }
 
 // New creates a new Client that will talk to the Server at the given address.
-func New(addr string, cmdQ <-chan control.Message) (*Client, error) {
+func New(addr string, interval time.Duration, cmdQ <-chan control.Message) (*Client, error) {
 	var (
 		err error
 		c   = &Client{
@@ -52,6 +53,7 @@ func New(addr string, cmdQ <-chan control.Message) (*Client, error) {
 			client: &http.Client{
 				Timeout: time.Millisecond * 2500,
 			},
+			interval: interval,
 		}
 	)
 
@@ -101,7 +103,7 @@ func (c *Client) run() {
 	liveTicker = time.NewTicker(common.ActiveTimeout)
 	defer liveTicker.Stop()
 
-	xmitTicker = time.NewTicker(common.LiveTimeout)
+	xmitTicker = time.NewTicker(c.interval)
 	defer xmitTicker.Stop()
 
 	for c.active.Load() {
@@ -207,12 +209,19 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 			t.Format(common.TimestampFormat),
 			err.Error())
 		return t, err
+	} else if len(records) == 0 {
+		return t, nil
 	} else if serial, err = json.Marshal(records); err != nil {
 		c.log.Printf("[ERROR] Cannot serialize %d Records: %s\n",
 			len(records),
 			err.Error())
 		return t, err
 	}
+
+	c.log.Printf("[DEBUG] About to transmit %d records to %s: %#v\n",
+		len(records),
+		c.srv,
+		records)
 
 	recent = records[len(records)-1].Timestamp
 	buf = bytes.NewBuffer(serial)
@@ -297,6 +306,11 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 		return nil, err
 	}
 
+	c.log.Printf("[DEBUG] I found %d files in spool directory %s:\n%#v\n",
+		len(files),
+		common.SpoolDir,
+		files)
+
 	data = make([]*model.Record, 0, len(files))
 
 	for _, f := range files {
@@ -307,7 +321,10 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 			rec        = new(model.Record)
 		)
 
-		tstr = path[:16]
+		c.log.Printf("[DEBUG] Attempt to parse %s\n",
+			f)
+
+		tstr = f[:16]
 		if timestamp, err = strconv.ParseInt(tstr, 16, 64); err != nil {
 			c.log.Printf("[ERROR] Cannot parse timestamp from filename %q: %s\n",
 				path,
@@ -324,12 +341,19 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 				path,
 				err.Error())
 			return nil, err
-		} else if err = json.Unmarshal(buf, &rec); err != nil {
+		} else if err = json.Unmarshal(buf, rec); err != nil {
 			c.log.Printf("[ERROR] Cannot parse Record from %s: %s\n",
 				path,
 				err.Error())
 			return nil, err
+		} else if rec == nil {
+			c.log.Printf("[ERROR] No error was returned processing %s, but no Record, either\n",
+				path)
+			continue
 		}
+
+		c.log.Printf("[DEBUG] Parsed one Record: %#v\n",
+			rec)
 
 		data = append(data, rec)
 	}

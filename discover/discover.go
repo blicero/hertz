@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 15:12:13 krylon>
+// Time-stamp: <2026-06-09 10:44:01 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/blicero/hertz/client"
 	"github.com/blicero/hertz/common"
@@ -24,26 +25,28 @@ import (
 
 // Explorer looks for peers on the network.
 type Explorer struct {
-	log    *log.Logger
-	mode   string
-	server string
-	peer   *pd.PeerDiscovery
-	active atomic.Bool
-	lock   sync.RWMutex
-	peers  map[string]string
-	client *client.Client
-	cmdQ   chan control.Message
+	log       *log.Logger
+	mode      string
+	server    string
+	peer      *pd.PeerDiscovery
+	active    atomic.Bool
+	xinterval time.Duration
+	lock      sync.RWMutex
+	peers     map[string]string
+	client    *client.Client
+	cmdQ      chan control.Message
 }
 
 // Create creates a new Explorer.
-func Create(mode string) (*Explorer, error) {
+func Create(mode string, xinterval time.Duration) (*Explorer, error) {
 	var (
 		err error
 		opt pd.Settings
 		xp  = &Explorer{
-			mode:  mode,
-			peers: make(map[string]string),
-			cmdQ:  make(chan control.Message, 2),
+			mode:      mode,
+			peers:     make(map[string]string),
+			cmdQ:      make(chan control.Message, 2),
+			xinterval: xinterval,
 		}
 	)
 
@@ -95,7 +98,7 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 			var srvAddr = fmt.Sprintf("http://%s:%d",
 				info.Address,
 				common.WebPort)
-			if xp.client, err = client.New(srvAddr, xp.cmdQ); err != nil {
+			if xp.client, err = client.New(srvAddr, xp.xinterval, xp.cmdQ); err != nil {
 				xp.log.Printf("[ERROR] Failed to create Client: %s\n",
 					err.Error())
 			} else {

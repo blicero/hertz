@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-03 13:43:53 krylon>
+// Time-stamp: <2026-06-09 10:44:23 krylon>
 
 package main
 
@@ -30,23 +30,31 @@ func main() {
 		common.BuildStamp.Format(common.TimestampFormat))
 
 	var (
-		err            error
-		interval       int64
-		webAddr        = fmt.Sprintf("[::]:%d", common.WebPort)
-		runWeb, runMon bool
-		mode           string
-		xp             *discover.Explorer
-		ticker         *time.Ticker
-		sigQ           chan os.Signal
-		mon            *monitor.Monitor
-		srv            *web.Server
+		err             error
+		collectInterval int64
+		xmitInterval    int64
+		webAddr         = fmt.Sprintf("[::]:%d", common.WebPort)
+		runWeb, runMon  bool
+		mode            string
+		xp              *discover.Explorer
+		ticker          *time.Ticker
+		sigQ            chan os.Signal
+		mon             *monitor.Monitor
+		srv             *web.Server
 	)
 
 	flag.Int64Var(
-		&interval,
-		"interval",
+		&collectInterval,
+		"cinterval",
 		defaultInterval,
 		"Interval (in seconds) between data collections")
+
+	flag.Int64Var(
+		&xmitInterval,
+		"xinterval",
+		int64(common.LiveTimeout.Seconds()),
+		"Interval (in seconds) between data transmissions",
+	)
 
 	flag.StringVar(
 		&webAddr,
@@ -80,7 +88,7 @@ func main() {
 
 	if runMon {
 		mode = "agent"
-		if mon, err = monitor.Create(interval); err != nil {
+		if mon, err = monitor.Create(collectInterval); err != nil {
 			fmt.Fprintf(
 				os.Stderr,
 				"Failed to create Monitor: %s\n",
@@ -104,7 +112,7 @@ func main() {
 		go srv.Run()
 	}
 
-	if xp, err = discover.Create(mode); err != nil {
+	if xp, err = discover.Create(mode, time.Duration(xmitInterval)*time.Second); err != nil {
 		fmt.Fprint(
 			os.Stderr,
 			"Failed to initialize peer discovery in %s mode: %s\n",
