@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 14:25:32 krylon>
+// Time-stamp: <2026-06-09 10:54:12 krylon>
 
 package web
 
@@ -29,7 +29,6 @@ import (
 	"github.com/blicero/hertz/logdomain"
 	"github.com/blicero/hertz/model"
 	"github.com/gorilla/mux"
-	"github.com/tidwall/buntdb"
 )
 
 const (
@@ -288,16 +287,11 @@ func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Reque
 	defer srv.pool.Put(db)
 
 	if host, err = db.HostGetByName(name); err != nil {
-		if errors.Is(err, buntdb.ErrNotFound) {
-			data.Payload = "0"
-			data.Status = true
-		} else {
-			msg = fmt.Sprintf("Failed to lookup Client %s: %s",
-				name,
-				err.Error())
-			srv.log.Printf("[ERROR] %s\n", msg)
-			data.Message = msg
-		}
+		msg = fmt.Sprintf("Failed to lookup Client %s: %s",
+			name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		data.Message = msg
 	} else if host == nil {
 		data.Payload = "0"
 		data.Status = true
