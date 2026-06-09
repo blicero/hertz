@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 02. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 14:23:09 krylon>
+// Time-stamp: <2026-06-09 11:29:57 krylon>
 
 // Package monitor implements the process of collecting and storing data
 // in a regular manner.
@@ -10,6 +10,7 @@ package monitor
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -26,11 +27,11 @@ import (
 
 // Monitor collects data and stores it to the database.
 type Monitor struct {
-	log      *log.Logger
-	probe    *collect.Probe
-	active   atomic.Bool
-	wg       sync.WaitGroup
-	interval time.Duration
+	log       *log.Logger
+	probe     *collect.Probe
+	active    atomic.Bool
+	wg        sync.WaitGroup
+	cinterval time.Duration
 }
 
 // Create creates a new Monitor that gathers new data every <tickSeconds> seconds.
@@ -38,7 +39,7 @@ func Create(tickSeconds int64) (*Monitor, error) {
 	var (
 		err error
 		mon = &Monitor{
-			interval: time.Second * time.Duration(tickSeconds),
+			cinterval: time.Second * time.Duration(tickSeconds),
 		}
 	)
 
@@ -78,10 +79,10 @@ func (mon *Monitor) process() {
 	)
 
 	mon.log.Printf("[TRACE] Starting to collect data every %s\n",
-		mon.interval)
+		mon.cinterval)
 	defer mon.log.Println("[TRACE] Terminating Monitor process")
 
-	ticker = time.NewTicker(mon.interval)
+	ticker = time.NewTicker(mon.cinterval)
 	defer ticker.Stop()
 
 	for mon.active.Load() {
@@ -105,12 +106,21 @@ func (mon *Monitor) recordStore(rec *model.Record) error {
 		fh   *os.File
 	)
 
+	if rec == nil {
+		err = errors.New("Record is nil")
+		mon.log.Printf("[ERROR] %s\n", err.Error())
+		return err
+	} else {
+		mon.log.Printf("[DEBUG] Save one record to file: %#v\n",
+			rec)
+	}
+
 	path = filepath.Join(
 		common.SpoolDir,
 		fmt.Sprintf("%016x.json", rec.Timestamp.Unix()),
 	)
 
-	if buf, err = json.Marshal(buf); err != nil {
+	if buf, err = json.Marshal(rec); err != nil {
 		mon.log.Printf("[ERROR] Cannot serialize Record: %s\n",
 			err.Error())
 		return err
