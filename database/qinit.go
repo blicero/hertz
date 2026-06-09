@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 12:50:47 krylon>
+// Time-stamp: <2026-06-09 11:40:43 krylon>
 
 package database
 
@@ -14,7 +14,7 @@ CREATE TABLE host (
     last_contact INTEGER NOT NULL DEFAULT 0
 ) STRICT
 `,
-	"CREATE INDEX host_name_idx ON host (name)",
+	"CREATE UNIQUE INDEX host_name_idx ON host (name)",
 	"CREATE INDEX host_contact_idx ON host (last_contact)",
 	`
 CREATE TABLE record (
@@ -30,6 +30,7 @@ CREATE TABLE record (
 ) STRICT
 `,
 	"CREATE INDEX time_idx ON record (timestamp)",
+	"CREATE INDEX rec_host_idx ON record (host_id)",
 	`
 CREATE TRIGGER IF NOT EXISTS host_contact_tr
 AFTER INSERT ON record
