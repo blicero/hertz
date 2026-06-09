@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 11:20:08 krylon>
+// Time-stamp: <2026-06-09 12:42:52 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -306,10 +306,10 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 		return nil, err
 	}
 
-	c.log.Printf("[DEBUG] I found %d files in spool directory %s:\n%#v\n",
+	c.log.Printf("[DEBUG] I found %d files in spool directory %s\n",
 		len(files),
 		common.SpoolDir,
-		files)
+	)
 
 	data = make([]*model.Record, 0, len(files))
 
