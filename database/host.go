@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 12:28:12 krylon>
+// Time-stamp: <2026-06-09 12:22:21 krylon>
 
 package database
 
@@ -228,6 +228,60 @@ EXEC_QUERY:
 
 	return hosts, nil
 } // func (db *Database) HostGetRecent(after time.Time) ([]*model.Host, error)
+
+// HostGetAll fetches all Hosts that submitted data since the givem timestamp.
+func (db *Database) HostGetAll() ([]*model.Host, error) {
+	const qid query.ID = query.HostGetAll
+	var (
+		err  error
+		stmt *sql.Stmt
+	)
+
+	if stmt, err = db.getQuery(qid); err != nil {
+		db.log.Printf("[ERROR] Cannot prepare query %s: %s\n",
+			qid,
+			err.Error())
+		return nil, err
+	} else if db.tx != nil {
+		stmt = db.tx.Stmt(stmt)
+	}
+
+	var rows *sql.Rows
+
+EXEC_QUERY:
+	if rows, err = stmt.Query(); err != nil {
+		if worthARetry(err) {
+			waitForRetry()
+			goto EXEC_QUERY
+		} else {
+			db.log.Printf("[ERROR] Query %s failed: %s\n",
+				qid,
+				err.Error())
+			return nil, err
+		}
+	}
+
+	defer rows.Close() // nolint: errcheck,gosec
+	var hosts = make([]*model.Host, 0)
+
+	for rows.Next() {
+		var (
+			lastContact int64
+			host        = new(model.Host)
+		)
+
+		if err = rows.Scan(&host.ID, &host.Name, &lastContact); err != nil {
+			var ex = fmt.Errorf("failed to scan row: %w", err)
+			db.log.Printf("[ERROR] %s\n", ex.Error())
+			return nil, ex
+		}
+
+		host.LastContact = time.Unix(lastContact, 0)
+		hosts = append(hosts, host)
+	}
+
+	return hosts, nil
+} // func (db *Database) HostGetAll(after time.Time) ([]*model.Host, error)
 
 // HostUpdateLastContact updates a Host's contact timestamp.
 func (db *Database) HostUpdateLastContact(host *model.Host, when time.Time) error {

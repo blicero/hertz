@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 12:17:59 krylon>
+// Time-stamp: <2026-06-09 12:20:51 krylon>
 
 //go:generate stringer -type=ID
 
@@ -17,6 +17,7 @@ const (
 	HostGetByName
 	HostGetByID
 	HostGetRecent
+	HostGetAll
 	HostUpdateLastContact
 	HostDelete
 	RecordAdd
