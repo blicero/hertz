@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 03. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 13:09:00 krylon>
+// Time-stamp: <2026-06-09 14:15:46 krylon>
 
 package common
 
@@ -45,7 +45,7 @@ const (
 	TimestampFormatTime      = "15:04:05"
 	NetName                  = "udp4"
 	BufSize                  = 65536
-	LiveTimeout              = time.Minute * 5
+	LiveTimeout              = time.Minute
 	ActiveTimeout            = time.Second * 5
 	WebPort                  = 7666
 )
