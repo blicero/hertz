@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-09 12:00:04 krylon>
+# Time-stamp: <2026-06-09 13:02:10 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,16 +14,16 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-09 Di 12:00]
+   #+CAPTION: Clock summary at [2026-06-09 Di 13:02]
    | Headline                            | Time      |           |      |      |      |
    |-------------------------------------+-----------+-----------+------+------+------|
-   | *Total time*                        | *1d 7:43* |           |      |      |      |
+   | *Total time*                        | *1d 8:35* |           |      |      |      |
    |-------------------------------------+-----------+-----------+------+------+------|
-   | *Hertz [10/11]*                     | *1d 7:43* |           |      |      |      |
-   | \_  /Components [9/10]/             |           | /1d 7:30/ |      |      |      |
+   | *Hertz [10/11]*                     | *1d 8:35* |           |      |      |      |
+   | \_  /Components [9/10]/             |           | /1d 8:22/ |      |      |      |
    | \_    Data Model [0/0]              |           |           | 6:55 |      |      |
    | \_    Data Collection [0/0]         |           |           | 3:15 |      |      |
-   | \_    Database [8/8]                |           |           | 6:46 |      |      |
+   | \_    Database [8/8]                |           |           | 7:03 |      |      |
    | \_      Back to SQLite? [3/3]       |           |           |      | 0:56 |      |
    | \_        Schema                    |           |           |      |      | 0:24 |
    | \_        Testing                   |           |           |      |      | 0:11 |
@@ -35,9 +35,9 @@
    | \_    Aggregate [0/0]               |           |           | 8:06 |      |      |
    | \_      Client [0/0]                |           |           |      | 8:06 |      |
    | \_    Peer Discovery [0/0]          |           |           | 1:33 |      |      |
-   | \_    Web Interface [0/1]           |           |           | 2:10 |      |      |
-   | \_      Handle Clients [0/0]        |           |           |      | 1:37 |      |
-   | \_      Overview [0/0]              |           |           |      | 0:16 |      |
+   | \_    Web Interface [0/1]           |           |           | 2:45 |      |      |
+   | \_      Handle Clients [0/0]        |           |           |      | 1:58 |      |
+   | \_      Overview [0/0]              |           |           |      | 0:30 |      |
    | \_    Main [1/1]                    |           |           | 1:59 |      |      |
    | \_      Configure transmit interval |           |           |      | 0:53 |      |
    | \_  /Bugs [1/1]/                    |           | /0:13/    |      |      |      |
@@ -76,6 +76,7 @@
     :VISIBILITY: all
     :END:
     :LOGBOOK:
+    CLOCK: [2026-06-09 Di 12:20]--[2026-06-09 Di 12:37] =>  0:17
     CLOCK: [2026-06-05 Fr 18:43]--[2026-06-05 Fr 19:00] =>  0:17
     CLOCK: [2026-06-03 Mi 12:08]--[2026-06-03 Mi 12:32] =>  0:24
     CLOCK: [2026-06-02 Di 10:48]--[2026-06-02 Di 11:46] =>  0:58
@@ -189,6 +190,7 @@
      :VISIBILITY: all
      :END:
      :LOGBOOK:
+     CLOCK: [2026-06-09 Di 12:40]--[2026-06-09 Di 13:01] =>  0:21
      CLOCK: [2026-06-06 Sa 12:30]--[2026-06-06 Sa 12:41] =>  0:11
      CLOCK: [2026-06-05 Fr 22:39]--[2026-06-05 Fr 22:48] =>  0:09
      CLOCK: [2026-06-05 Fr 21:37]--[2026-06-05 Fr 22:27] =>  0:50
@@ -197,6 +199,7 @@
      :END:
 **** TODO Overview [0/0]
      :LOGBOOK:
+     CLOCK: [2026-06-09 Di 12:06]--[2026-06-09 Di 12:20] =>  0:14
      CLOCK: [2026-06-08 Mo 11:16]--[2026-06-08 Mo 11:30] =>  0:14
      CLOCK: [2026-06-08 Mo 11:00]--[2026-06-08 Mo 11:02] =>  0:02
      :END:
