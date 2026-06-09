@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 12:42:52 krylon>
+// Time-stamp: <2026-06-09 15:21:07 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -218,10 +218,9 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		return t, err
 	}
 
-	c.log.Printf("[DEBUG] About to transmit %d records to %s: %#v\n",
+	c.log.Printf("[DEBUG] About to transmit %d records to %s\n",
 		len(records),
-		c.srv,
-		records)
+		c.srv)
 
 	recent = records[len(records)-1].Timestamp
 	buf = bytes.NewBuffer(serial)
