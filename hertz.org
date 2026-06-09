@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-09 11:32:20 krylon>
+# Time-stamp: <2026-06-09 12:00:04 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,20 +14,20 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-09 Di 11:32]
+   #+CAPTION: Clock summary at [2026-06-09 Di 12:00]
    | Headline                            | Time      |           |      |      |      |
    |-------------------------------------+-----------+-----------+------+------+------|
-   | *Total time*                        | *1d 7:21* |           |      |      |      |
+   | *Total time*                        | *1d 7:43* |           |      |      |      |
    |-------------------------------------+-----------+-----------+------+------+------|
-   | *Hertz [10/11]*                     | *1d 7:21* |           |      |      |      |
-   | \_  /Components [9/10]/             |           | /1d 7:08/ |      |      |      |
+   | *Hertz [10/11]*                     | *1d 7:43* |           |      |      |      |
+   | \_  /Components [9/10]/             |           | /1d 7:30/ |      |      |      |
    | \_    Data Model [0/0]              |           |           | 6:55 |      |      |
    | \_    Data Collection [0/0]         |           |           | 3:15 |      |      |
-   | \_    Database [8/8]                |           |           | 6:24 |      |      |
+   | \_    Database [8/8]                |           |           | 6:46 |      |      |
    | \_      Back to SQLite? [3/3]       |           |           |      | 0:56 |      |
    | \_        Schema                    |           |           |      |      | 0:24 |
    | \_        Testing                   |           |           |      |      | 0:11 |
-   | \_      Save client records in bulk |           |           |      | 0:10 |      |
+   | \_      Save client records in bulk |           |           |      | 0:32 |      |
    | \_      Add connection pool         |           |           |      | 0:06 |      |
    | \_      Register Clients            |           |           |      | 0:33 |      |
    | \_      Switch key to timestamp     |           |           |      | 1:02 |      |
@@ -110,8 +110,9 @@
       CLOCK: [2026-06-08 Mo 12:43]--[2026-06-08 Mo 12:54] =>  0:11
       :END:
 **** DONE Save client records in bulk
-     CLOSED: [2026-06-05 Fr 22:38]
+     CLOSED: [2026-06-09 Di 11:59]
      :LOGBOOK:
+     CLOCK: [2026-06-09 Di 11:37]--[2026-06-09 Di 11:59] =>  0:22
      CLOCK: [2026-06-05 Fr 22:28]--[2026-06-05 Fr 22:38] =>  0:10
      :END:
 **** DONE Add connection pool
