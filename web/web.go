@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 10:54:12 krylon>
+// Time-stamp: <2026-06-09 11:36:42 krylon>
 
 package web
 
@@ -347,6 +347,10 @@ func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
 		res.Message = msg
 		goto SEND
 	}
+
+	srv.log.Printf("[DEBUG] Received %d Records from %s\n",
+		len(records),
+		name)
 
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
