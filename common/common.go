@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 03. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 13:05:22 krylon>
+// Time-stamp: <2026-06-09 12:03:50 krylon>
 
 package common
 
@@ -36,7 +36,7 @@ import (
 // application.
 const (
 	AppName                  = "Hertz"
-	Version                  = "0.3.0"
+	Version                  = "0.4.0"
 	Debug                    = true
 	TimestampFormatMinute    = "2006-01-02 15:04"
 	TimestampFormat          = "2006-01-02 15:04:05"
