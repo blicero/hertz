@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 12:57:04 krylon>
+// Time-stamp: <2026-06-10 12:20:58 krylon>
 
 package database
 
@@ -44,8 +44,9 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 	}
 
 	var (
-		rows *sql.Rows
 		freq []byte
+		res  sql.Result
+		id   int64
 	)
 
 	if freq, err = json.Marshal(rec.Freq); err != nil {
@@ -55,7 +56,7 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 	}
 
 EXEC_QUERY:
-	if rows, err = stmt.Query(rec.HostID, rec.Timestamp.Unix(), string(freq)); err != nil {
+	if res, err = stmt.Exec(rec.HostID, rec.Timestamp.Unix(), string(freq)); err != nil {
 		if worthARetry(err) {
 			waitForRetry()
 			goto EXEC_QUERY
@@ -66,28 +67,16 @@ EXEC_QUERY:
 			db.log.Printf("[ERROR] %s\n", err.Error())
 			return err
 		}
-	} else {
-		var id int64
-
-		defer rows.Close() // nolint: errcheck
-
-		if !rows.Next() {
-			// CANTHAPPEN
-			db.log.Printf("[ERROR] Query %s did not return a value\n",
-				qid)
-			return fmt.Errorf("query %s did not return a value", qid)
-		} else if err = rows.Scan(&id); err != nil {
-			var ex = fmt.Errorf("failed to get ID for newly added Record: %w",
-				err)
-			db.log.Printf("[ERROR] %s\n", ex.Error())
-			return ex
-		}
-
-		rec.ID = id
+	} else if id, err = res.LastInsertId(); err != nil {
+		db.log.Printf("[ERROR] Failed to get ID of newly added record: %s\n",
+			err.Error())
+		return err
 	}
 
+	rec.ID = id
+
 	return nil
-} // func (db *Database) RecordAdd(record *model.Record) error
+} // func (db *Database) RecordAdd(rec *model.Record) error
 
 // RecordAddBulk adds a sequence of Records from a single Host to the database
 // in a single transaction.
@@ -97,6 +86,7 @@ func (db *Database) RecordAddBulk(name string, data []*model.Record) error {
 		host    *model.Host
 		tx      *sql.Tx
 		success bool
+		maxts   time.Time
 	)
 
 	if tx, err = db.db.Begin(); err != nil {
@@ -138,12 +128,20 @@ func (db *Database) RecordAddBulk(name string, data []*model.Record) error {
 			db.log.Printf("[ERROR] Cannot store data: %s\n",
 				err.Error())
 			return err
+		} else if maxts.Before(rec.Timestamp) {
+			maxts = rec.Timestamp
 		}
 	}
 
-	if err == nil {
-		success = true
+	if err = db.HostUpdateLastContact(host, maxts); err != nil {
+		db.log.Printf("[ERROR] Failed to update contact timestamp for %s (%d): %s\n",
+			host.Name,
+			host.ID,
+			err.Error())
+		return err
 	}
+
+	success = true
 
 	return nil
 } // func (db *Database) RecordAddBulk(name string, data []*model.Record) error

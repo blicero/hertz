@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 11:40:43 krylon>
+// Time-stamp: <2026-06-10 11:28:04 krylon>
 
 package database
 
@@ -29,13 +29,12 @@ CREATE TABLE record (
       ON DELETE CASCADE
 ) STRICT
 `,
-	"CREATE INDEX time_idx ON record (timestamp)",
-	"CREATE INDEX rec_host_idx ON record (host_id)",
+	"CREATE UNIQUE INDEX rec_host_time_idx ON record (host_id, timestamp)",
 	`
 CREATE TRIGGER IF NOT EXISTS host_contact_tr
 AFTER INSERT ON record
 BEGIN
-    UPDATE host SET last_contact = new.timestamp;
+    UPDATE host SET last_contact = new.timestamp WHERE id = new.id;
 END;
 `,
 }

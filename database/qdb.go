@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 13:04:13 krylon>
+// Time-stamp: <2026-06-10 11:50:20 krylon>
 
 package database
 
@@ -44,7 +44,6 @@ FROM host
 	query.RecordAdd: `
 INSERT INTO record (host_id, timestamp, freq) VALUES (?, ?, ?)
 ON CONFLICT (host_id, timestamp) DO NOTHING
-RETURNING id
 `,
 	query.RecordGetByHost: `
 SELECT
