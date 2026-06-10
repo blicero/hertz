@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 12:30:45 krylon>
+// Time-stamp: <2026-06-10 14:22:05 krylon>
 
 package web
 
@@ -274,6 +274,71 @@ func (srv *Server) handleHostsView(w http.ResponseWriter, r *http.Request) {
 		srv.sendErrorMessage(w, msg)
 	}
 } // func (srv *Server) handleHostsView(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+
+	const tmplName = "host"
+	var (
+		err       error
+		tmpl      *template.Template
+		db        *database.Database
+		msg, name string
+		vars      map[string]string
+		data      = tmplDataSingleHost{
+			tmplDataBase: tmplDataBase{
+				Debug: common.Debug,
+				URL:   r.RequestURI,
+			},
+		}
+	)
+
+	vars = mux.Vars(r)
+	name = vars["name"]
+
+	srv.log.Printf("[TRACE] About to gather some data on %s\n",
+		name)
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Host, err = db.HostGetByName(name); err != nil {
+		msg = fmt.Sprint("Failed to look for Host %s: %s",
+			name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Host == nil {
+		msg = fmt.Sprintf("%s is not a known Host",
+			name)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Records, err = db.RecordGetByHost(data.Host, -1); err != nil {
+		msg = fmt.Sprintf("Failed to get data for Host %s: %s\n",
+			name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+		msg = fmt.Sprintf("Could not find template %q", tmplName)
+		srv.log.Println("[CRITICAL] " + msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	w.Header().Set("Cache-Control", noCache)
+	if err = tmpl.Execute(w, &data); err != nil {
+		msg = fmt.Sprintf("Error rendering template %q: %s",
+			tmplName,
+			err.Error())
+		srv.sendErrorMessage(w, msg)
+	}
+} // func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request)
 
 //////////////////////////////////////////////////////////////////////////////
 /// Handle AJAX //////////////////////////////////////////////////////////////
