@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 15:21:07 krylon>
+// Time-stamp: <2026-06-10 10:59:10 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -196,6 +196,7 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 	var (
 		err      error
 		records  []*model.Record
+		files    []string
 		serial   []byte
 		buf      *bytes.Buffer
 		res      *http.Response
@@ -204,7 +205,7 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		endpoint string
 	)
 
-	if records, err = c.loadData(t); err != nil {
+	if records, files, err = c.loadData(t); err != nil {
 		c.log.Printf("[ERROR] Failed to get Records after %s: %s\n",
 			t.Format(common.TimestampFormat),
 			err.Error())
@@ -278,10 +279,20 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 			reply)
 	}
 
+	for _, f := range files {
+		var path = filepath.Join(common.SpoolDir, f)
+
+		if err = os.Remove(path); err != nil {
+			c.log.Printf("[ERROR] Cannot delete spool file %s: %s\n",
+				f,
+				err.Error())
+		}
+	}
+
 	return recent, nil
 } // func (c *Client) transmitData(t time.Time) error
 
-func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
+func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 	var (
 		err   error
 		dirh  *os.File
@@ -293,7 +304,7 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 		c.log.Printf("[CRITICAL] Cannot open spool directory %s: %s\n",
 			common.SpoolDir,
 			err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 
 	defer dirh.Close() // nolint: errcheck
@@ -302,7 +313,7 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 		c.log.Printf("[CRITICAL] Cannot read contents of spool directory %s: %s\n",
 			common.SpoolDir,
 			err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 
 	c.log.Printf("[DEBUG] I found %d files in spool directory %s\n",
@@ -328,7 +339,7 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 			c.log.Printf("[ERROR] Cannot parse timestamp from filename %q: %s\n",
 				path,
 				err.Error())
-			return nil, err
+			return nil, nil, err
 		} else if time.Unix(timestamp, 0).Before(t) {
 			continue
 		}
@@ -339,12 +350,12 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 			c.log.Printf("[ERROR] Cannot read %s: %s\n",
 				path,
 				err.Error())
-			return nil, err
+			return nil, nil, err
 		} else if err = json.Unmarshal(buf, rec); err != nil {
 			c.log.Printf("[ERROR] Cannot parse Record from %s: %s\n",
 				path,
 				err.Error())
-			return nil, err
+			return nil, nil, err
 		} else if rec == nil {
 			c.log.Printf("[ERROR] No error was returned processing %s, but no Record, either\n",
 				path)
@@ -357,5 +368,5 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, error) {
 		data = append(data, rec)
 	}
 
-	return data, nil
+	return data, files, nil
 } // func (c *Client) loadData(t time.Time) ([]*model.Record, error)
