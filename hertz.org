@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-09 15:21:30 krylon>
+# Time-stamp: <2026-06-10 12:29:42 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,44 +7,45 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [10/12]
+* Hertz [12/13]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-09 Di 15:21]
-   | Headline                                          | Time      |           |      |      |      |
-   |---------------------------------------------------+-----------+-----------+------+------+------|
-   | *Total time*                                      | *1d 9:15* |           |      |      |      |
-   |---------------------------------------------------+-----------+-----------+------+------+------|
-   | *Hertz [10/12]*                                   | *1d 9:15* |           |      |      |      |
-   | \_  /Components [9/11]/                           |           | /1d 9:02/ |      |      |      |
-   | \_    Data Model [0/0]                            |           |           | 6:55 |      |      |
-   | \_    Data Collection [0/0]                       |           |           | 3:15 |      |      |
-   | \_    Database [8/8]                              |           |           | 7:03 |      |      |
-   | \_      Back to SQLite? [3/3]                     |           |           |      | 0:56 |      |
-   | \_        Schema                                  |           |           |      |      | 0:24 |
-   | \_        Testing                                 |           |           |      |      | 0:11 |
-   | \_      Save client records in bulk               |           |           |      | 0:32 |      |
-   | \_      Add connection pool                       |           |           |      | 0:06 |      |
-   | \_      Register Clients                          |           |           |      | 0:33 |      |
-   | \_      Switch key to timestamp                   |           |           |      | 1:02 |      |
-   | \_    Monitor [0/0]                               |           |           | 0:46 |      |      |
-   | \_    Aggregate [0/1]                             |           |           | 8:46 |      |      |
-   | \_      Client [0/1]                              |           |           |      | 8:46 |      |
-   | \_        Delete spooled records once they are... |           |           |      |      | 0:40 |
-   | \_    Peer Discovery [0/0]                        |           |           | 1:33 |      |      |
-   | \_    Web Interface [0/1]                         |           |           | 2:45 |      |      |
-   | \_      Handle Clients [0/0]                      |           |           |      | 1:58 |      |
-   | \_      Overview [0/0]                            |           |           |      | 0:30 |      |
-   | \_    Main [1/1]                                  |           |           | 1:59 |      |      |
-   | \_      Configure transmit interval               |           |           |      | 0:53 |      |
-   | \_  /Bugs [1/1]/                                  |           | /0:13/    |      |      |      |
-   | \_    Panic in Database                           |           |           | 0:13 |      |      |
+   #+CAPTION: Clock summary at [2026-06-10 Mi 12:29]
+   | Headline                                          | Time       |            |      |      |      |
+   |---------------------------------------------------+------------+------------+------+------+------|
+   | *Total time*                                      | *1d 10:51* |            |      |      |      |
+   |---------------------------------------------------+------------+------------+------+------+------|
+   | *Hertz [12/13]*                                   | *1d 10:51* |            |      |      |      |
+   | \_  /Components [11/12]/                          |            | /1d 10:38/ |      |      |      |
+   | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
+   | \_    Data Collection [0/0]                       |            |            | 3:15 |      |      |
+   | \_    Database [8/8]                              |            |            | 7:03 |      |      |
+   | \_      Back to SQLite? [3/3]                     |            |            |      | 0:56 |      |
+   | \_        Schema                                  |            |            |      |      | 0:24 |
+   | \_        Testing                                 |            |            |      |      | 0:11 |
+   | \_      Save client records in bulk               |            |            |      | 0:32 |      |
+   | \_      Add connection pool                       |            |            |      | 0:06 |      |
+   | \_      Register Clients                          |            |            |      | 0:33 |      |
+   | \_      Switch key to timestamp                   |            |            |      | 1:02 |      |
+   | \_    Monitor [0/0]                               |            |            | 0:46 |      |      |
+   | \_    Aggregate [0/1]                             |            |            | 9:16 |      |      |
+   | \_      Client [1/1]                              |            |            |      | 9:16 |      |
+   | \_        Delete spooled records once they are... |            |            |      |      | 1:10 |
+   | \_    Peer Discovery [0/0]                        |            |            | 1:33 |      |      |
+   | \_    Web Interface [1/2]                         |            |            | 3:51 |      |      |
+   | \_      Handle Clients [1/1]                      |            |            |      | 3:04 |      |
+   | \_        Deal with duplicate records...          |            |            |      |      | 1:06 |
+   | \_      Overview [0/0]                            |            |            |      | 0:30 |      |
+   | \_    Main [1/1]                                  |            |            | 1:59 |      |      |
+   | \_      Configure transmit interval               |            |            |      | 0:53 |      |
+   | \_  /Bugs [1/1]/                                  |            | /0:13/     |      |      |      |
+   | \_    Panic in Database                           |            |            | 0:13 |      |      |
    #+END:
-** Components [9/11]
+** Components [11/12]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -153,7 +154,7 @@
     Having lots of little computers collecting data on their own is no fun, I
     want send the data to a central repository
     Maybe use DNS-SD to find the machine to talk to about that?
-**** Client [0/1]
+**** Client [1/1]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: all
@@ -166,8 +167,10 @@
      CLOCK: [2026-06-05 Fr 18:33]--[2026-06-05 Fr 18:43] =>  0:10
      CLOCK: [2026-06-05 Fr 15:20]--[2026-06-05 Fr 15:50] =>  0:30
      :END:
-***** TODO Delete spooled records once they are saved on the Server
+***** DONE Delete spooled records once they are saved on the Server
+      CLOSED: [2026-06-10 Mi 11:20]
       :LOGBOOK:
+      CLOCK: [2026-06-10 Mi 10:50]--[2026-06-10 Mi 11:20] =>  0:30
       CLOCK: [2026-06-09 Di 14:41]--[2026-06-09 Di 15:21] =>  0:40
       :END:
 *** Peer Discovery [0/0]
@@ -180,7 +183,7 @@
     CLOCK: [2026-06-03 Mi 13:31]--[2026-06-03 Mi 13:48] =>  0:17
     CLOCK: [2026-06-03 Mi 12:10]--[2026-06-03 Mi 13:03] =>  0:53
     :END:
-*** Web Interface [0/1]
+*** Web Interface [1/2]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -189,7 +192,7 @@
     CLOCK: [2026-06-06 Sa 12:30]--[2026-06-06 Sa 12:30] =>  0:00
     CLOCK: [2026-06-03 Mi 11:23]--[2026-06-03 Mi 11:40] =>  0:17
     :END:
-**** Handle Clients [0/0]
+**** Handle Clients [1/1]
      :PROPERTIES:
      :COOKIE_DATA: todo recursive
      :VISIBILITY: all
@@ -202,6 +205,11 @@
      CLOCK: [2026-06-05 Fr 21:14]--[2026-06-05 Fr 21:36] =>  0:22
      CLOCK: [2026-06-05 Fr 21:03]--[2026-06-05 Fr 21:08] =>  0:05
      :END:
+***** DONE Deal with duplicate records gracefully [0/0]
+      CLOSED: [2026-06-10 Mi 12:26]
+      :LOGBOOK:
+      CLOCK: [2026-06-10 Mi 11:20]--[2026-06-10 Mi 12:26] =>  1:06
+      :END:
 **** TODO Overview [0/0]
      :LOGBOOK:
      CLOCK: [2026-06-09 Di 12:06]--[2026-06-09 Di 12:20] =>  0:14
