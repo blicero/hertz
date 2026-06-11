@@ -1,6 +1,6 @@
 {{ define "hosts" }}
 {{/* Created on 08. 06. 2026 */}}
-{{/* Time-stamp: <2026-06-09 13:07:58 krylon> */}}
+{{/* Time-stamp: <2026-06-11 11:35:17 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -23,7 +23,7 @@
           {{ range .Hosts }}
           <tr>
             <td>
-              <a href="/host/{{ .ID }}">
+              <a href="/host/{{ .Name }}">
                 {{ .Name }}
               </a>
             </td>
