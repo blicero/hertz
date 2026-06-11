@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 10:44:23 krylon>
+// Time-stamp: <2026-06-11 11:35:38 krylon>
 
 package main
 
@@ -113,7 +113,7 @@ func main() {
 	}
 
 	if xp, err = discover.Create(mode, time.Duration(xmitInterval)*time.Second); err != nil {
-		fmt.Fprint(
+		fmt.Fprintf(
 			os.Stderr,
 			"Failed to initialize peer discovery in %s mode: %s\n",
 			mode,
