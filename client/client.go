@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-10 10:59:10 krylon>
+// Time-stamp: <2026-06-11 13:16:42 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -274,10 +274,10 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		c.log.Printf("[ERROR] Unexpected Payload in response from server: %s (expected %s)\n",
 			reply.Payload,
 			rstamp)
-	} else {
+	} /*else {
 		c.log.Printf("[DEBUG] Server replied: %#v\n",
 			reply)
-	}
+	}*/
 
 	for _, f := range files {
 		var path = filepath.Join(common.SpoolDir, f)
@@ -331,8 +331,8 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 			rec        = new(model.Record)
 		)
 
-		c.log.Printf("[DEBUG] Attempt to parse %s\n",
-			f)
+		// c.log.Printf("[DEBUG] Attempt to parse %s\n",
+		// 	f)
 
 		tstr = f[:16]
 		if timestamp, err = strconv.ParseInt(tstr, 16, 64); err != nil {
@@ -362,8 +362,8 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 			continue
 		}
 
-		c.log.Printf("[DEBUG] Parsed one Record: %#v\n",
-			rec)
+		// c.log.Printf("[DEBUG] Parsed one Record: %#v\n",
+		// 	rec)
 
 		data = append(data, rec)
 	}
