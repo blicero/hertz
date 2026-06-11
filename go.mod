@@ -10,9 +10,11 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.45
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/schollz/peerdiscovery v1.7.6
+	github.com/sentenz/percent v1.0.0
 )
 
 require (
+	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 )

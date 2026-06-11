@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-10 14:22:05 krylon>
+// Time-stamp: <2026-06-11 11:56:52 krylon>
 
 package web
 
@@ -29,6 +29,7 @@ import (
 	"github.com/blicero/hertz/logdomain"
 	"github.com/blicero/hertz/model"
 	"github.com/gorilla/mux"
+	"github.com/sentenz/percent/pkg/percent"
 )
 
 const (
@@ -131,6 +132,7 @@ func Create(addr string) (*Server, error) {
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
 	srv.router.HandleFunc("/host/all", srv.handleHostsView)
+	srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
 
 	// AJAX Handlers
 	srv.router.HandleFunc(
@@ -303,7 +305,7 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 	defer srv.pool.Put(db)
 
 	if data.Host, err = db.HostGetByName(name); err != nil {
-		msg = fmt.Sprint("Failed to look for Host %s: %s",
+		msg = fmt.Sprintf("Failed to look for Host %s: %s",
 			name,
 			err.Error())
 		srv.log.Printf("[ERROR] %s\n", msg)
@@ -322,6 +324,24 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
 		return
+	}
+
+	data.Histogram = make(map[int64]int64, 0)
+
+	var total int64 = 0
+
+	for _, rec := range data.Records {
+		for _, freq := range rec.Freq {
+			freq -= (freq % 100)
+			data.Histogram[freq]++
+		}
+		total += int64(len(rec.Freq))
+	}
+
+	data.HistPercent = make(map[int64]float64, len(data.Histogram))
+
+	for freq, cnt := range data.Histogram {
+		data.HistPercent[freq], _ = percent.Of(cnt, total)
 	}
 
 	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {

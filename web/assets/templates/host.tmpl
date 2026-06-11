@@ -1,0 +1,38 @@
+{{ define "host" }}
+{{/* Created on 11. 06. 2026 */}}
+{{/* Time-stamp: <2026-06-11 12:03:05 krylon> */}}
+<!DOCTYPE html>
+<html>
+  {{ template "head" . }}
+
+  <body>
+    {{ template "intro" . }}
+
+    <div class="body content">
+      <h2>Histogram</h2>
+      <table class="table table-striped freqtable">
+        <thead>
+          <tr>
+            <td>Frequency (MHz)</td>
+            <td>Cnt</td>
+            <td>%</td>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ $perc := .HistPercent }}
+          {{ range $freq, $cnt := .Histogram }}
+          <tr>
+            <td class="cnt">{{ $freq }}</td>
+            <td class="cnt">{{ $cnt }}</td>
+            <td class="cnt">{{ fmt_float (index $perc $freq) }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+
+    {{ template "footer" . }}
+  </body>
+</html>
+{{ end }}
