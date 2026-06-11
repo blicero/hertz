@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-11 11:56:52 krylon>
+// Time-stamp: <2026-06-11 14:15:32 krylon>
 
 package web
 
@@ -24,12 +24,14 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/Feralthedogg/go-functional/pkg/functional"
 	"github.com/blicero/hertz/common"
 	"github.com/blicero/hertz/database"
 	"github.com/blicero/hertz/logdomain"
 	"github.com/blicero/hertz/model"
 	"github.com/gorilla/mux"
 	"github.com/sentenz/percent/pkg/percent"
+	chart "github.com/wcharczuk/go-chart/v2"
 )
 
 const (
@@ -132,6 +134,7 @@ func Create(addr string) (*Server, error) {
 	srv.router.HandleFunc("/static/{file}", srv.handleStaticFile)
 	srv.router.HandleFunc("/{index:(?i:index|main|start)$}", srv.handleMain)
 	srv.router.HandleFunc("/host/all", srv.handleHostsView)
+	srv.router.HandleFunc("/host/{name}/chart", srv.handleHostChart)
 	srv.router.HandleFunc("/host/{name}", srv.handleSingleHostView)
 
 	// AJAX Handlers
@@ -359,6 +362,67 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 		srv.sendErrorMessage(w, msg)
 	}
 } // func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request)
+
+func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
+	var (
+		err           error
+		vars          map[string]string
+		msg, hostname string
+		db            *database.Database
+		host          *model.Host
+		records       []*model.Record
+	)
+
+	vars = mux.Vars(r)
+	hostname = vars["name"]
+
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if host, err = db.HostGetByName(hostname); err != nil {
+		msg = fmt.Sprintf("Error while for host named %q: %s",
+			hostname,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if host == nil {
+		msg = fmt.Sprintf("Unknown host %q", hostname)
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if records, err = db.RecordGetByHost(host, -1); err != nil {
+		msg = fmt.Sprintf("Error while retrieving Records for %s: %s",
+			hostname,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	}
+
+	var pic = chart.Chart{
+		Series: []chart.Series{
+			chart.TimeSeries{
+				XValues: functional.Map(
+					func(rec *model.Record) time.Time {
+						return rec.Timestamp
+					},
+					records),
+				YValues: functional.Map(
+					func(rec *model.Record) float64 {
+						return float64(rec.Freq[0])
+					},
+					records,
+				),
+			},
+		},
+	}
+
+	w.Header().Set("Content-Type", "image/png")
+	w.Header().Set("Cache-Control", noCache)
+	pic.Render(chart.PNG, w)
+} // func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request)
 
 //////////////////////////////////////////////////////////////////////////////
 /// Handle AJAX //////////////////////////////////////////////////////////////
