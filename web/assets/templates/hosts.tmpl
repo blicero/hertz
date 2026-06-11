@@ -1,6 +1,6 @@
 {{ define "hosts" }}
 {{/* Created on 08. 06. 2026 */}}
-{{/* Time-stamp: <2026-06-11 11:35:17 krylon> */}}
+{{/* Time-stamp: <2026-06-11 13:17:39 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -14,7 +14,6 @@
           <tr>
             <th>Name</th>
             <th>Status</th>
-            <th># CPUs</th>
             <th>Last Seen</th>
           </tr>
         </thead>
@@ -34,10 +33,6 @@
               {{ else }}
               <img src="/static/dialog-error.png" />
               {{ end }}
-            </td>
-
-            <td>
-              &gt;= 0
             </td>
 
             <td>
