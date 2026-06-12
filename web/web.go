@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-11 14:15:32 krylon>
+// Time-stamp: <2026-06-12 12:08:06 krylon>
 
 package web
 
@@ -369,6 +369,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		err           error
 		vars          map[string]string
 		msg, hostname string
+		begin, end    time.Time
 		db            *database.Database
 		host          *model.Host
 		records       []*model.Record
@@ -376,6 +377,9 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 
 	vars = mux.Vars(r)
 	hostname = vars["name"]
+
+	end = time.Now()
+	begin = end.Add(time.Hour * -24)
 
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
@@ -392,7 +396,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
 		return
-	} else if records, err = db.RecordGetByHost(host, -1); err != nil {
+	} else if records, err = db.RecordGetByHostPeriod(host, begin, end); err != nil {
 		msg = fmt.Sprintf("Error while retrieving Records for %s: %s",
 			hostname,
 			err.Error())
@@ -401,7 +405,40 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	srv.log.Printf("[DEBUG] Creating chart for %s with %d Records\n",
+		hostname,
+		len(records))
+
+	var (
+		values = make([]float64, len(records))
+		stride = max(10, len(records)/50)
+	)
+
+	for idx := range len(records) {
+		var (
+			minidx = max(idx-stride, 0)
+			acc    int64
+		)
+
+		for x := minidx; x <= idx; x++ {
+			var r = records[x]
+			acc += functional.Reduce(
+				func(a, b int64) int64 { return a + b },
+				0,
+				r.Freq)
+		}
+
+		values[idx] = float64(acc /
+			int64(len(records[0].Freq)*max(idx-minidx, 1)))
+	}
+
 	var pic = chart.Chart{
+		Title:  fmt.Sprintf("CPU Frequency of %s", hostname),
+		Width:  1280,
+		Height: 720,
+		XAxis: chart.XAxis{
+			ValueFormatter: chart.TimeValueFormatterWithFormat("02. 01. 15:04"),
+		},
 		Series: []chart.Series{
 			chart.TimeSeries{
 				XValues: functional.Map(
@@ -409,19 +446,18 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 						return rec.Timestamp
 					},
 					records),
-				YValues: functional.Map(
-					func(rec *model.Record) float64 {
-						return float64(rec.Freq[0])
-					},
-					records,
-				),
+				YValues: values,
 			},
 		},
 	}
 
 	w.Header().Set("Content-Type", "image/png")
 	w.Header().Set("Cache-Control", noCache)
-	pic.Render(chart.PNG, w)
+	if err = pic.Render(chart.PNG, w); err != nil {
+		srv.log.Printf("[ERROR] Rendering chart for %s failed: %s\n",
+			hostname,
+			err.Error())
+	}
 } // func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request)
 
 //////////////////////////////////////////////////////////////////////////////
