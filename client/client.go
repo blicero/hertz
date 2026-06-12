@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-11 13:16:42 krylon>
+// Time-stamp: <2026-06-12 13:11:44 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -219,19 +219,11 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		return t, err
 	}
 
-	c.log.Printf("[DEBUG] About to transmit %d records to %s\n",
-		len(records),
-		c.srv)
-
 	recent = records[len(records)-1].Timestamp
 	buf = bytes.NewBuffer(serial)
 	endpoint = fmt.Sprintf("%s/ws/submit_data/%s",
 		c.srv,
 		c.hostname)
-
-	c.log.Printf("[DEBUG] Sending %d records to %s\n",
-		len(records),
-		c.srv)
 
 	if res, err = c.client.Post(endpoint, "application/json", buf); err != nil {
 		c.log.Printf("[ERROR] Failed to submit data to %s: %s\n",
@@ -274,10 +266,7 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		c.log.Printf("[ERROR] Unexpected Payload in response from server: %s (expected %s)\n",
 			reply.Payload,
 			rstamp)
-	} /*else {
-		c.log.Printf("[DEBUG] Server replied: %#v\n",
-			reply)
-	}*/
+	}
 
 	for _, f := range files {
 		var path = filepath.Join(common.SpoolDir, f)
@@ -316,11 +305,6 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 		return nil, nil, err
 	}
 
-	c.log.Printf("[DEBUG] I found %d files in spool directory %s\n",
-		len(files),
-		common.SpoolDir,
-	)
-
 	data = make([]*model.Record, 0, len(files))
 
 	for _, f := range files {
@@ -330,9 +314,6 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 			buf        []byte
 			rec        = new(model.Record)
 		)
-
-		// c.log.Printf("[DEBUG] Attempt to parse %s\n",
-		// 	f)
 
 		tstr = f[:16]
 		if timestamp, err = strconv.ParseInt(tstr, 16, 64); err != nil {
@@ -361,9 +342,6 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 				path)
 			continue
 		}
-
-		// c.log.Printf("[DEBUG] Parsed one Record: %#v\n",
-		// 	rec)
 
 		data = append(data, rec)
 	}

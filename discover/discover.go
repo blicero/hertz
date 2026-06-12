@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 10:44:01 krylon>
+// Time-stamp: <2026-06-12 13:25:58 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -88,9 +88,7 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 			err error
 			pl  = string(info.Payload)
 		)
-		xp.log.Printf("[DEBUG] Discovered new peer %s -- %s\n",
-			info.Address,
-			pl)
+
 		xp.peers[info.Address] = pl
 
 		if xp.mode != "server" && pl == "server" && xp.server == "" {

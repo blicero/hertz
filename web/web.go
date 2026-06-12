@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 12:27:41 krylon>
+// Time-stamp: <2026-06-12 13:24:56 krylon>
 
 package web
 
@@ -310,9 +310,6 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 	name = vars["name"]
 	data.Title = name
 
-	srv.log.Printf("[TRACE] About to gather some data on %s\n",
-		name)
-
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
 
@@ -593,10 +590,6 @@ func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
 		res.Message = msg
 		goto SEND
 	}
-
-	srv.log.Printf("[DEBUG] Received %d Records from %s\n",
-		len(records),
-		name)
 
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
