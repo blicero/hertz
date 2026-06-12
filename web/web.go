@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 12:08:06 krylon>
+// Time-stamp: <2026-06-12 12:27:41 krylon>
 
 package web
 
@@ -272,9 +272,7 @@ func (srv *Server) handleHostsView(w http.ResponseWriter, r *http.Request) {
 		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
 		return
-	}
-
-	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
 		msg = fmt.Sprintf("Could not find template %q", tmplName)
 		srv.log.Println("[CRITICAL] " + msg)
 		srv.sendErrorMessage(w, msg)
@@ -310,6 +308,7 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 
 	vars = mux.Vars(r)
 	name = vars["name"]
+	data.Title = name
 
 	srv.log.Printf("[TRACE] About to gather some data on %s\n",
 		name)
@@ -450,7 +449,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 
 	var pic = chart.Chart{
 		Title:  fmt.Sprintf("CPU Frequency of %s", hostname),
-		Width:  1280,
+		Width:  1600,
 		Height: 720,
 		XAxis: chart.XAxis{
 			ValueFormatter: chart.TimeValueFormatterWithFormat("02. 01. 15:04"),
