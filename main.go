@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-11 11:35:38 krylon>
+// Time-stamp: <2026-06-12 13:40:02 krylon>
 
 package main
 
@@ -46,13 +46,13 @@ func main() {
 	flag.Int64Var(
 		&collectInterval,
 		"cinterval",
-		defaultInterval,
+		15,
 		"Interval (in seconds) between data collections")
 
 	flag.Int64Var(
 		&xmitInterval,
 		"xinterval",
-		int64(common.LiveTimeout.Seconds()),
+		300,
 		"Interval (in seconds) between data transmissions",
 	)
 
