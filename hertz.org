@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-12 12:29:01 krylon>
+# Time-stamp: <2026-06-12 13:27:56 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,19 +7,19 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [16/16]
+* Hertz [17/17]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-12 Fr 12:28]
+   #+CAPTION: Clock summary at [2026-06-12 Fr 13:27]
    | Headline                                          | Time       |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Total time*                                      | *1d 16:21* |            |      |      |      |
+   | *Total time*                                      | *1d 16:42* |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Hertz [16/16]*                                   | *1d 16:21* |            |      |      |      |
+   | *Hertz [17/17]*                                   | *1d 16:42* |            |      |      |      |
    | \_  /Components [15/15]/                          |            | /1d 16:08/ |      |      |      |
    | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
    | \_    Data Collection [0/0]                       |            |            | 3:15 |      |      |
@@ -45,7 +45,8 @@
    | \_      Make a shiny chart?                       |            |            |      | 2:03 |      |
    | \_    Main [1/1]                                  |            |            | 1:59 |      |      |
    | \_      Configure transmit interval               |            |            |      | 0:53 |      |
-   | \_  /Bugs [1/1]/                                  |            | /0:13/     |      |      |      |
+   | \_  /Bugs [2/2]/                                  |            | /0:34/     |      |      |      |
+   | \_    Unclutter the log                           |            |            | 0:21 |      |      |
    | \_    Panic in Database                           |            |            | 0:13 |      |      |
    #+END:
 ** Components [15/15]
@@ -273,11 +274,16 @@
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
-** Bugs [1/1]
+** Bugs [2/2]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
+*** DONE Unclutter the log
+    CLOSED: [2026-06-12 Fr 13:27]
+    :LOGBOOK:
+    CLOCK: [2026-06-12 Fr 13:06]--[2026-06-12 Fr 13:27] =>  0:21
+    :END:
 *** DONE Panic in Database 
     CLOSED: [2026-06-08 Mo 12:54]
     :LOGBOOK:
