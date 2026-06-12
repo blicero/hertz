@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-10 11:50:20 krylon>
+// Time-stamp: <2026-06-12 12:35:30 krylon>
 
 package database
 
@@ -38,6 +38,7 @@ SELECT
     name,
     last_contact
 FROM host
+ORDER BY name
 `,
 	query.HostUpdateLastContact: "UPDATE host SET last_contact = ? WHERE id = ?",
 	query.HostDelete:            "DELETE FROM host WHERE id = ?",
