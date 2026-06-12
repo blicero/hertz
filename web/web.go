@@ -209,6 +209,7 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 	var (
 		err  error
 		msg  string
+		db   *database.Database
 		tmpl *template.Template
 		data = tmplDataIndex{
 			tmplDataBase: tmplDataBase{
@@ -219,7 +220,16 @@ func (srv *Server) handleMain(w http.ResponseWriter, r *http.Request) {
 		}
 	)
 
-	if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
+	db = srv.pool.Get()
+	defer srv.pool.Put(db)
+
+	if data.Hosts, err = db.HostGetAll(); err != nil {
+		msg = fmt.Sprintf("HostGetAll failed: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if tmpl = srv.tmpl.Lookup(tmplName); tmpl == nil {
 		msg = fmt.Sprintf("Could not find template %q", tmplName)
 		srv.log.Println("[CRITICAL] " + msg)
 		srv.sendErrorMessage(w, msg)
@@ -310,6 +320,12 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 	if data.Host, err = db.HostGetByName(name); err != nil {
 		msg = fmt.Sprintf("Failed to look for Host %s: %s",
 			name,
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if data.Hosts, err = db.HostGetAll(); err != nil {
+		msg = fmt.Sprintf("HostGetAll failed: %s",
 			err.Error())
 		srv.log.Printf("[ERROR] %s\n", msg)
 		srv.sendErrorMessage(w, msg)
