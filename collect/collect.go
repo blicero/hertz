@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-08 14:23:45 krylon>
+// Time-stamp: <2026-06-13 13:09:33 krylon>
 
 // Package collect implements collecting CPU frequency data.
 package collect
@@ -22,6 +22,7 @@ const (
 	linuxCPUInfo   = "/proc/cpuinfo"
 	linuxSysfsFreq = "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
 	freeBSDCpuInfo = "/linproc/cpuinfo"
+	invalidTemp    = -1024
 )
 
 // nolint: unused
@@ -61,6 +62,7 @@ func (p *Probe) Collect() (*model.Record, error) {
 		return nil, err
 	}
 
+	rec.Temperature = p.getTemp()
 	rec.Timestamp = time.Now()
 	return rec, nil
 } // func (p *Probe) Collect() (*model.FreqRecord, error)

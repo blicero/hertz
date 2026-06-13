@@ -62,6 +62,8 @@ github.com/schollz/peerdiscovery v1.7.6 h1:HJjU1cXcNGfZgenC/vbry9F6CH9B8f+QYcTip
 github.com/schollz/peerdiscovery v1.7.6/go.mod h1:iTa0MWSPy49jJ2HcXL5oSSnFsd6olEUorAFljxbnj2I=
 github.com/sentenz/percent v1.0.0 h1:DDKMOfs3cAfa7b+qsOQTNx3CKQELLS6IcnJ8Hmb+ghg=
 github.com/sentenz/percent v1.0.0/go.mod h1:P1QD7GeDAOalPrVf9ovrSJlNQzPzUMM2qHrsOE0XBo4=
+github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b h1:A0dEqKvhRwdlwU914ZsPns8M+KYbM+VO/mZwQwcX8og=
+github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b/go.mod h1:COFpNRoa9A4pAl0UtyUp8wuzSxsS0StEQwsmYfYMtbI=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.5.0 h1:1zr/of2m5FGMsad5YfcqgdqdWrIhu+EBEJRhR1U7z/c=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
