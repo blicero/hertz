@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-13 10:44:23 krylon>
+# Time-stamp: <2026-06-13 11:40:43 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,20 +7,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [17/17]
+* Hertz [18/18]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-13 Sa 10:44]
+   #+CAPTION: Clock summary at [2026-06-13 Sa 11:40]
    | Headline                                          | Time       |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Total time*                                      | *1d 16:56* |            |      |      |      |
+   | *Total time*                                      | *1d 17:16* |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Hertz [17/17]*                                   | *1d 16:56* |            |      |      |      |
-   | \_  /Components [15/15]/                          |            | /1d 16:22/ |      |      |      |
+   | *Hertz [18/18]*                                   | *1d 17:16* |            |      |      |      |
+   | \_  /Components [16/16]/                          |            | /1d 16:42/ |      |      |      |
    | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
    | \_    Data Collection [0/0]                       |            |            | 3:15 |      |      |
    | \_    Database [8/8]                              |            |            | 7:03 |      |      |
@@ -35,7 +35,8 @@
    | \_    Aggregate [1/1]                             |            |            | 9:16 |      |      |
    | \_      Client [1/1]                              |            |            |      | 9:16 |      |
    | \_        Delete spooled records once they are... |            |            |      |      | 1:10 |
-   | \_    Peer Discovery [0/0]                        |            |            | 1:33 |      |      |
+   | \_    Peer Discovery [1/1]                        |            |            | 1:53 |      |      |
+   | \_      Allow server and monitor to coexist       |            |            |      | 0:20 |      |
    | \_    Web Interface [5/5]                         |            |            | 9:35 |      |      |
    | \_      Handle Clients [1/1]                      |            |            |      | 3:04 |      |
    | \_        Deal with duplicate records...          |            |            |      |      | 1:06 |
@@ -49,7 +50,7 @@
    | \_    Unclutter the log                           |            |            | 0:21 |      |      |
    | \_    Panic in Database                           |            |            | 0:13 |      |      |
    #+END:
-** Components [15/15]
+** Components [16/16]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -177,7 +178,7 @@
       CLOCK: [2026-06-10 Mi 10:50]--[2026-06-10 Mi 11:20] =>  0:30
       CLOCK: [2026-06-09 Di 14:41]--[2026-06-09 Di 15:21] =>  0:40
       :END:
-*** Peer Discovery [0/0]
+*** Peer Discovery [1/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -187,6 +188,11 @@
     CLOCK: [2026-06-03 Mi 13:31]--[2026-06-03 Mi 13:48] =>  0:17
     CLOCK: [2026-06-03 Mi 12:10]--[2026-06-03 Mi 13:03] =>  0:53
     :END:
+**** DONE Allow server and monitor to coexist
+     CLOSED: [2026-06-13 Sa 11:40]
+     :LOGBOOK:
+     CLOCK: [2026-06-13 Sa 11:20]--[2026-06-13 Sa 11:40] =>  0:20
+     :END:
 *** Web Interface [5/5]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
