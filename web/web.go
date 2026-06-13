@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 13:24:56 krylon>
+// Time-stamp: <2026-06-13 10:42:02 krylon>
 
 package web
 
@@ -424,6 +424,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 	var (
 		values = make([]float64, len(records))
 		stride = max(10, len(records)/50)
+		maxY   int64
 	)
 
 	for idx := range len(records) {
@@ -434,10 +435,12 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 
 		for x := minidx; x <= idx; x++ {
 			var r = records[x]
-			acc += functional.Reduce(
+			var v = functional.Reduce(
 				func(a, b int64) int64 { return a + b },
 				0,
 				r.Freq)
+			acc += v
+			maxY = max(maxY, v/int64(len(r.Freq)))
 		}
 
 		values[idx] = float64(acc /
@@ -447,9 +450,15 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 	var pic = chart.Chart{
 		Title:  fmt.Sprintf("CPU Frequency of %s", hostname),
 		Width:  1600,
-		Height: 720,
+		Height: 600,
 		XAxis: chart.XAxis{
 			ValueFormatter: chart.TimeValueFormatterWithFormat("02. 01. 15:04"),
+		},
+		YAxis: chart.YAxis{
+			Range: &chart.ContinuousRange{
+				Min: 0.0,
+				Max: float64(maxY),
+			},
 		},
 		Series: []chart.Series{
 			chart.TimeSeries{
@@ -556,8 +565,6 @@ func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Reque
 } // func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
-	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
-
 	var (
 		err       error
 		db        *database.Database
