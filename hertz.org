@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-13 11:40:43 krylon>
+# Time-stamp: <2026-06-13 14:54:15 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,23 +7,25 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [18/18]
+* Hertz [19/21]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-13 Sa 11:40]
+   #+CAPTION: Clock summary at [2026-06-13 Sa 14:54]
    | Headline                                          | Time       |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Total time*                                      | *1d 17:16* |            |      |      |      |
+   | *Total time*                                      | *1d 19:57* |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Hertz [18/18]*                                   | *1d 17:16* |            |      |      |      |
-   | \_  /Components [16/16]/                          |            | /1d 16:42/ |      |      |      |
+   | *Hertz [19/21]*                                   | *1d 19:57* |            |      |      |      |
+   | \_  /Components [17/18]/                          |            | /1d 19:23/ |      |      |      |
    | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
-   | \_    Data Collection [0/0]                       |            |            | 3:15 |      |      |
-   | \_    Database [8/8]                              |            |            | 7:03 |      |      |
+   | \_    Data Collection [0/1]                       |            |            | 5:44 |      |      |
+   | \_      Collect temperature as well               |            |            |      | 2:29 |      |
+   | \_    Database [9/9]                              |            |            | 7:15 |      |      |
+   | \_      Add temperature                           |            |            |      | 0:12 |      |
    | \_      Back to SQLite? [3/3]                     |            |            |      | 0:56 |      |
    | \_        Schema                                  |            |            |      |      | 0:24 |
    | \_        Testing                                 |            |            |      |      | 0:11 |
@@ -50,7 +52,7 @@
    | \_    Unclutter the log                           |            |            | 0:21 |      |      |
    | \_    Panic in Database                           |            |            | 0:13 |      |      |
    #+END:
-** Components [16/16]
+** Components [17/18]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -65,7 +67,7 @@
     CLOCK: [2026-06-04 Do 16:12]--[2026-06-04 Do 16:52] =>  0:40
     CLOCK: [2026-05-30 Sa 11:49]--[2026-05-30 Sa 17:43] =>  5:54
     :END:
-*** Data Collection [0/0]
+*** Data Collection [0/1]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -74,10 +76,14 @@
     CLOCK: [2026-06-01 Mo 13:55]--[2026-06-01 Mo 14:39] =>  0:44
     CLOCK: [2026-06-01 Mo 11:15]--[2026-06-01 Mo 13:46] =>  2:31
     :END:
+**** TODO Collect temperature as well
+     :LOGBOOK:
+     CLOCK: [2026-06-13 Sa 12:23]--[2026-06-13 Sa 14:52] =>  2:29
+     :END:
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
-*** Database [8/8]
+*** Database [9/9]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -93,6 +99,11 @@
     On second thought, nah, SQLite is just *too good* to pass.
     ... On third thought, however, I think BuntDB sounds delicious. If only to
     cut down on compile times, as it is pure Go.
+**** DONE Add temperature
+     CLOSED: [2026-06-13 Sa 12:15]
+     :LOGBOOK:
+     CLOCK: [2026-06-13 Sa 12:03]--[2026-06-13 Sa 12:15] =>  0:12
+     :END:
 **** DONE Back to SQLite? [3/3]
      CLOSED: [2026-06-08 Mo 12:54]
      :PROPERTIES:
@@ -271,11 +282,15 @@
      :LOGBOOK:
      CLOCK: [2026-06-09 Di 10:38]--[2026-06-09 Di 11:31] =>  0:53
      :END:
-** Features [0/0]
+** Features [0/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
+*** TODO Collect temperature data as well?
+    In previous attempts, this was kind of wonky, because on some systems it
+    is very ambiguous which temperature value I want.
+    I think I should make this a configurable option.
 ** Journal [0/0]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
