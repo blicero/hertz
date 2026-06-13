@@ -2,15 +2,13 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-09 13:07:02 krylon>
+// Time-stamp: <2026-06-13 11:07:05 krylon>
 
 // Package model provides data types used throughout the application.
 package model
 
 import (
 	"time"
-
-	"github.com/blicero/hertz/common"
 )
 
 type Host struct {
@@ -22,7 +20,7 @@ type Host struct {
 // IsAlive returns true if the most recent interaction with the Host
 // was within twice the usual transmit interval.
 func (h *Host) IsAlive() bool {
-	return time.Since(h.LastContact) < (2 * common.LiveTimeout)
+	return time.Since(h.LastContact) < (time.Minute * 5)
 } // func (h *Host) IsAlive() bool
 
 // Record contains the CPU frequency at a given point in time.
