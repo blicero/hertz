@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 11:03:54 krylon>
+// Time-stamp: <2026-06-13 11:22:36 krylon>
 
 package web
 
@@ -47,7 +47,8 @@ func cacheSeconds(seconds int) string {
 		return noCache
 	}
 
-	return fmt.Sprintf("max-age=%d, public")
+	return fmt.Sprintf("max-age=%d, public",
+		seconds)
 } // func cacheSeconds(second int) string
 
 //go:embed assets
