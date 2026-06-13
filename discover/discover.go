@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 13:25:58 krylon>
+// Time-stamp: <2026-06-13 11:30:47 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -57,6 +57,7 @@ func Create(mode string, xinterval time.Duration) (*Explorer, error) {
 	opt.Notify = xp.handleNewPeer
 	opt.NotifyLost = xp.handleLostPeer
 	opt.Port = strconv.FormatInt(common.WebPort, 10)
+	opt.AllowSelf = true
 
 	if xp.log, err = common.GetLogger(logdomain.Discover); err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 
 		xp.peers[info.Address] = pl
 
-		if xp.mode != "server" && pl == "server" && xp.server == "" {
+		if pl == "server" && xp.server == "" {
 			xp.server = pl
 			var srvAddr = fmt.Sprintf("http://%s:%d",
 				info.Address,
@@ -118,7 +119,7 @@ func (xp *Explorer) handleLostPeer(lost pd.LostPeer) {
 
 	delete(xp.peers, lost.Address)
 
-	if xp.mode != "server" && xp.server == lost.Address && xp.client != nil {
+	if xp.server == lost.Address && xp.client != nil {
 		xp.log.Printf("[DEBUG] Lost touch with server %s, stopping Client\n",
 			xp.server)
 		xp.server = ""
