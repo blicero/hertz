@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 10:42:02 krylon>
+// Time-stamp: <2026-06-13 11:03:54 krylon>
 
 package web
 
@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -40,6 +41,14 @@ const (
 	tmplFolder   = "assets/templates"
 	poolSize     = 4
 )
+
+func cacheSeconds(seconds int) string {
+	if seconds == 0 {
+		return noCache
+	}
+
+	return fmt.Sprintf("max-age=%d, public")
+} // func cacheSeconds(second int) string
 
 //go:embed assets
 var assets embed.FS
@@ -417,6 +426,8 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	slices.Reverse(records)
+
 	srv.log.Printf("[DEBUG] Creating chart for %s with %d Records\n",
 		hostname,
 		len(records))
@@ -473,7 +484,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "image/png")
-	w.Header().Set("Cache-Control", noCache)
+	w.Header().Set("Cache-Control", cacheSeconds(600))
 	if err = pic.Render(chart.PNG, w); err != nil {
 		srv.log.Printf("[ERROR] Rendering chart for %s failed: %s\n",
 			hostname,
@@ -646,11 +657,12 @@ func (srv *Server) handleFavIco(w http.ResponseWriter, request *http.Request) {
 
 	w.Header().Set("Content-Type", mimeType)
 
-	if !common.Debug {
-		w.Header().Set("Cache-Control", cacheControl)
-	} else {
-		w.Header().Set("Cache-Control", noCache)
-	}
+	// if !common.Debug {
+	// 	w.Header().Set("Cache-Control", cacheControl)
+	// } else {
+	// 	w.Header().Set("Cache-Control", noCache)
+	// }
+	w.Header().Set("Cache-Control", cacheSeconds(900))
 
 	var (
 		err error
@@ -680,10 +692,6 @@ func (srv *Server) handleStaticFile(w http.ResponseWriter, request *http.Request
 
 	var mimeType string
 
-	// srv.log.Printf("[TRACE] Delivering static file %s to client %s\n",
-	// 	filename,
-	// 	request.RemoteAddr)
-
 	var match []string
 
 	if match = common.SuffixPattern.FindStringSubmatch(filename); match == nil {
@@ -695,12 +703,13 @@ func (srv *Server) handleStaticFile(w http.ResponseWriter, request *http.Request
 	}
 
 	w.Header().Set("Content-Type", mimeType)
+	w.Header().Set("Cache-Control", cacheSeconds(900))
 
-	if common.Debug {
-		w.Header().Set("Cache-Control", noCache)
-	} else {
-		w.Header().Set("Cache-Control", cacheControl)
-	}
+	// if common.Debug {
+	// 	w.Header().Set("Cache-Control", noCache)
+	// } else {
+	// 	w.Header().Set("Cache-Control", cacheControl)
+	// }
 
 	var (
 		err error
