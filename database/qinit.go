@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-10 11:28:04 krylon>
+// Time-stamp: <2026-06-13 12:09:32 krylon>
 
 package database
 
@@ -21,6 +21,7 @@ CREATE TABLE record (
     id INTEGER PRIMARY KEY,
     host_id INTEGER NOT NULL,
     timestamp INTEGER NOT NULL,
+    temperature INTEGER,
     freq TEXT NOT NULL,
     UNIQUE (host_id, timestamp),
     CHECK (json_valid(freq)),

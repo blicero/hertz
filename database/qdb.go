@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 12:35:30 krylon>
+// Time-stamp: <2026-06-13 12:16:22 krylon>
 
 package database
 
@@ -43,13 +43,14 @@ ORDER BY name
 	query.HostUpdateLastContact: "UPDATE host SET last_contact = ? WHERE id = ?",
 	query.HostDelete:            "DELETE FROM host WHERE id = ?",
 	query.RecordAdd: `
-INSERT INTO record (host_id, timestamp, freq) VALUES (?, ?, ?)
+INSERT INTO record (host_id, timestamp, temperature, freq) VALUES (?, ?, ?, ?)
 ON CONFLICT (host_id, timestamp) DO NOTHING
 `,
 	query.RecordGetByHost: `
 SELECT
     id,
     timestamp,
+    COALESCE(temperature, -1024),
     freq
 FROM record
 WHERE host_id = ?
@@ -60,7 +61,8 @@ LIMIT ?
 SELECT
     id,
     host_id,
-    timestamp,
+    COALESCE(timestamp, -1024),
+    temperature,
     freq
 FROM record
 WHERE timestamp BETWEEN ? AND ?
@@ -70,6 +72,7 @@ ORDER BY timestamp DESC
 SELECT
     id,
     timestamp,
+    COALESCE(temperature, -1024),
     freq
 FROM record
 WHERE host_id = ? AND timestamp BETWEEN ? AND ?

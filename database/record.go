@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 08. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-10 12:20:58 krylon>
+// Time-stamp: <2026-06-13 12:06:46 krylon>
 
 package database
 
@@ -56,7 +56,11 @@ func (db *Database) RecordAdd(rec *model.Record) error {
 	}
 
 EXEC_QUERY:
-	if res, err = stmt.Exec(rec.HostID, rec.Timestamp.Unix(), string(freq)); err != nil {
+	if res, err = stmt.Exec(
+		rec.HostID,
+		rec.Timestamp.Unix(),
+		rec.Temperature,
+		string(freq)); err != nil {
 		if worthARetry(err) {
 			waitForRetry()
 			goto EXEC_QUERY
@@ -189,7 +193,7 @@ EXEC_QUERY:
 			rec    = &model.Record{HostID: host.ID}
 		)
 
-		if err = rows.Scan(&rec.ID, &tstamp, &freq); err != nil {
+		if err = rows.Scan(&rec.ID, &tstamp, &rec.Temperature, &freq); err != nil {
 			var ex = fmt.Errorf("failed to scan row: %w", err)
 			db.log.Printf("[ERROR] %s\n", ex.Error())
 			return nil, ex
@@ -251,7 +255,7 @@ EXEC_QUERY:
 			rec    = new(model.Record)
 		)
 
-		if err = rows.Scan(&rec.ID, &rec.HostID, &tstamp, &freq); err != nil {
+		if err = rows.Scan(&rec.ID, &rec.HostID, &tstamp, &rec.Temperature, &freq); err != nil {
 			var ex = fmt.Errorf("failed to scan row: %w", err)
 			db.log.Printf("[ERROR] %s\n", ex.Error())
 			return nil, ex
@@ -312,7 +316,7 @@ EXEC_QUERY:
 			rec    = &model.Record{HostID: host.ID}
 		)
 
-		if err = rows.Scan(&rec.ID, &tstamp, &freq); err != nil {
+		if err = rows.Scan(&rec.ID, &tstamp, &rec.Temperature, &freq); err != nil {
 			var ex = fmt.Errorf("failed to scan row: %w", err)
 			db.log.Printf("[ERROR] %s\n", ex.Error())
 			return nil, ex

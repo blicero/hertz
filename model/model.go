@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 11:07:05 krylon>
+// Time-stamp: <2026-06-13 12:02:48 krylon>
 
 // Package model provides data types used throughout the application.
 package model
@@ -25,10 +25,11 @@ func (h *Host) IsAlive() bool {
 
 // Record contains the CPU frequency at a given point in time.
 type Record struct {
-	ID        int64     `json:"id"`
-	HostID    int64     `json:"host_id"`
-	Timestamp time.Time `json:"timestamp"`
-	Freq      []int64   `json:"freq"`
+	ID          int64     `json:"id"`
+	HostID      int64     `json:"host_id"`
+	Timestamp   time.Time `json:"timestamp"`
+	Freq        []int64   `json:"freq"`
+	Temperature int64     `json:"temp"`
 }
 
 // Equal returns true if the Record is equal to other.
@@ -36,6 +37,7 @@ func (r *Record) Equal(other *Record) bool {
 	if r.ID != other.ID ||
 		r.HostID != other.HostID ||
 		!r.Timestamp.Equal(other.Timestamp) ||
+		r.Temperature != other.Temperature ||
 		len(r.Freq) != len(other.Freq) {
 		return false
 	}
