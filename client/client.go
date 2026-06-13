@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 13:11:44 krylon>
+// Time-stamp: <2026-06-12 17:11:25 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -113,8 +113,6 @@ func (c *Client) run() {
 		case <-liveTicker.C:
 			continue
 		case <-xmitTicker.C:
-			c.log.Printf("[DEBUG] About to send data to %s\n",
-				c.srv)
 			var t time.Time
 			if t, err = c.transmitData(timestamp); err != nil {
 				c.log.Printf("[ERROR] Failed to transmit data: %s\n",
