@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-13 14:54:15 krylon>
+# Time-stamp: <2026-06-15 13:02:52 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,16 +14,16 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-13 Sa 14:54]
+   #+CAPTION: Clock summary at [2026-06-15 Mo 13:02]
    | Headline                                          | Time       |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Total time*                                      | *1d 19:57* |            |      |      |      |
+   | *Total time*                                      | *1d 20:59* |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Hertz [19/21]*                                   | *1d 19:57* |            |      |      |      |
-   | \_  /Components [17/18]/                          |            | /1d 19:23/ |      |      |      |
+   | *Hertz [19/21]*                                   | *1d 20:59* |            |      |      |      |
+   | \_  /Components [17/18]/                          |            | /1d 20:25/ |      |      |      |
    | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
-   | \_    Data Collection [0/1]                       |            |            | 5:44 |      |      |
-   | \_      Collect temperature as well               |            |            |      | 2:29 |      |
+   | \_    Data Collection [0/1]                       |            |            | 5:45 |      |      |
+   | \_      Collect temperature as well               |            |            |      | 2:30 |      |
    | \_    Database [9/9]                              |            |            | 7:15 |      |      |
    | \_      Add temperature                           |            |            |      | 0:12 |      |
    | \_      Back to SQLite? [3/3]                     |            |            |      | 0:56 |      |
@@ -48,6 +48,7 @@
    | \_      Make a shiny chart?                       |            |            |      | 2:17 |      |
    | \_    Main [1/1]                                  |            |            | 1:59 |      |      |
    | \_      Configure transmit interval               |            |            |      | 0:53 |      |
+   | \_    Configuration [0/0]                         |            |            | 1:01 |      |      |
    | \_  /Bugs [2/2]/                                  |            | /0:34/     |      |      |      |
    | \_    Unclutter the log                           |            |            | 0:21 |      |      |
    | \_    Panic in Database                           |            |            | 0:13 |      |      |
@@ -78,8 +79,11 @@
     :END:
 **** TODO Collect temperature as well
      :LOGBOOK:
+     CLOCK: [2026-06-15 Mo 11:59]--[2026-06-15 Mo 12:00] =>  0:01
      CLOCK: [2026-06-13 Sa 12:23]--[2026-06-13 Sa 14:52] =>  2:29
      :END:
+     On Linux, at least, I will have to configure, which sensor to use. Which
+     means, I need to have some kind of configuration file first.
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
@@ -282,6 +286,16 @@
      :LOGBOOK:
      CLOCK: [2026-06-09 Di 10:38]--[2026-06-09 Di 11:31] =>  0:53
      :END:
+*** Configuration [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: all
+    :END:
+    :LOGBOOK:
+    CLOCK: [2026-06-15 Mo 12:55]--[2026-06-15 Mo 13:02] =>  0:07
+    CLOCK: [2026-06-15 Mo 12:00]--[2026-06-15 Mo 12:54] =>  0:54
+    :END:
+    I think I'm going to use TOML.
 ** Features [0/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
