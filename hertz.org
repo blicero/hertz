@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-15 13:44:08 krylon>
+# Time-stamp: <2026-06-15 17:00:28 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,16 +14,17 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-15 Mo 13:44]
+   #+CAPTION: Clock summary at [2026-06-15 Mo 17:00]
    | Headline                                          | Time       |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Total time*                                      | *1d 21:34* |            |      |      |      |
+   | *Total time*                                      | *1d 22:26* |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Hertz [19/21]*                                   | *1d 21:34* |            |      |      |      |
-   | \_  /Components [17/18]/                          |            | /1d 21:00/ |      |      |      |
+   | *Hertz [19/21]*                                   | *1d 22:26* |            |      |      |      |
+   | \_  /Components [17/18]/                          |            | /1d 21:52/ |      |      |      |
    | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
-   | \_    Data Collection [0/1]                       |            |            | 6:20 |      |      |
-   | \_      Collect temperature as well               |            |            |      | 3:05 |      |
+   | \_    Data Collection [1/4]                       |            |            | 7:12 |      |      |
+   | \_      Collect temperature as well               |            |            |      | 3:57 |      |
+   | \_        OpenBSD                                 |            |            |      |      | 0:52 |
    | \_    Database [9/9]                              |            |            | 7:15 |      |      |
    | \_      Add temperature                           |            |            |      | 0:12 |      |
    | \_      Back to SQLite? [3/3]                     |            |            |      | 0:56 |      |
@@ -68,7 +69,7 @@
     CLOCK: [2026-06-04 Do 16:12]--[2026-06-04 Do 16:52] =>  0:40
     CLOCK: [2026-05-30 Sa 11:49]--[2026-05-30 Sa 17:43] =>  5:54
     :END:
-*** Data Collection [0/1]
+*** Data Collection [1/4]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -85,6 +86,14 @@
      :END:
      On Linux, at least, I will have to configure, which sensor to use. Which
      means, I need to have some kind of configuration file first.
+***** DONE Linux
+      CLOSED: [2026-06-15 Mo 14:43]
+***** TODO FreeBSD
+***** TODO OpenBSD
+      :LOGBOOK:
+      CLOCK: [2026-06-15 Mo 15:08]--[2026-06-15 Mo 16:00] =>  0:52
+      :END:
+      Getting sensor data on OpenBSD should be relatively easy.
 **** Linux [0/0]
 **** FreeBSD [0/0]
 **** OpenBSD [0/0]
