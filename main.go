@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 13:40:02 krylon>
+// Time-stamp: <2026-06-15 13:01:15 krylon>
 
 package main
 
@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/blicero/hertz/common"
+	"github.com/blicero/hertz/config"
 	"github.com/blicero/hertz/discover"
 	"github.com/blicero/hertz/monitor"
 	"github.com/blicero/hertz/web"
@@ -41,7 +42,29 @@ func main() {
 		sigQ            chan os.Signal
 		mon             *monitor.Monitor
 		srv             *web.Server
+		cfg             *config.Config
 	)
+
+	if err = common.InitApp(); err != nil {
+		fmt.Fprintf(
+			os.Stderr,
+			"Failed to initialized application environment: %s\n",
+			err.Error(),
+		)
+		os.Exit(1)
+	} else if cfg, err = config.Read(common.CfgPath); err != nil {
+		fmt.Fprintf(
+			os.Stderr,
+			"Failed to read config from %s: %s\n",
+			common.CfgPath,
+			err.Error())
+		os.Exit(1)
+	}
+
+	collectInterval = cfg.Collect.Interval.Collect
+	xmitInterval = cfg.Collect.Interval.Transmit
+	webAddr = cfg.Web.Address
+	common.Debug = cfg.Global.Debug
 
 	flag.Int64Var(
 		&collectInterval,

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 09. 03. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 11:42:33 krylon>
+// Time-stamp: <2026-06-15 13:00:59 krylon>
 
 package common
 
@@ -37,7 +37,6 @@ import (
 const (
 	AppName                  = "Hertz"
 	Version                  = "0.8.0"
-	Debug                    = true
 	TimestampFormatMinute    = "2006-01-02 15:04"
 	TimestampFormat          = "2006-01-02 15:04:05"
 	TimestampFormatSubSecond = "2006-01-02 15:04:05.0000 MST"
@@ -49,6 +48,10 @@ const (
 	ActiveTimeout            = time.Second * 5
 	WebPort                  = 7666
 )
+
+// Debug is the global debug flag. If true, it causes additional log messages
+// and sanity checks.
+var Debug = true
 
 // LogLevels are the names of the log levels supported by the logger.
 var LogLevels = []logutils.LogLevel{
