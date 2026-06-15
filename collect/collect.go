@@ -17,6 +17,10 @@ import (
 	"github.com/blicero/hertz/model"
 )
 
+// TemperaturePath defines - on Linux systems - what sensor to read the
+// temperature from.
+var TemperaturePath string
+
 // nolint: unused
 const (
 	linuxCPUInfo   = "/proc/cpuinfo"

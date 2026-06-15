@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 13:01:15 krylon>
+// Time-stamp: <2026-06-15 13:10:51 krylon>
 
 package main
 
@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/blicero/hertz/collect"
 	"github.com/blicero/hertz/common"
 	"github.com/blicero/hertz/config"
 	"github.com/blicero/hertz/discover"
@@ -65,6 +66,7 @@ func main() {
 	xmitInterval = cfg.Collect.Interval.Transmit
 	webAddr = cfg.Web.Address
 	common.Debug = cfg.Global.Debug
+	collect.TemperaturePath = cfg.Collect.Temperature
 
 	flag.Int64Var(
 		&collectInterval,
