@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 13:09:33 krylon>
+// Time-stamp: <2026-06-15 13:37:55 krylon>
 
 // Package collect implements collecting CPU frequency data.
 package collect
@@ -66,7 +66,11 @@ func (p *Probe) Collect() (*model.Record, error) {
 		return nil, err
 	}
 
-	rec.Temperature = p.getTemp()
+	if rec.Temperature, err = p.getTemp(); err != nil {
+		p.log.Printf("[ERROR] Failed to read temperature: %s\n",
+			err.Error())
+		rec.Temperature = invalidTemp
+	}
 	rec.Timestamp = time.Now()
 	return rec, nil
 } // func (p *Probe) Collect() (*model.FreqRecord, error)
