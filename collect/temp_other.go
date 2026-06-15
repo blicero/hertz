@@ -2,9 +2,9 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 13. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 13:22:29 krylon>
+// Time-stamp: <2026-06-15 15:11:15 krylon>
 
-//go:build !linux
+//go:build !(linux || openbsd)
 
 package collect
 

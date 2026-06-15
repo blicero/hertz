@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 13. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 13:54:59 krylon>
+// Time-stamp: <2026-06-15 14:45:43 krylon>
 
 //go:build linux
 
@@ -15,7 +15,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/blicero/hertz/common"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ssimunic/gosensors"
 )
@@ -79,10 +78,10 @@ func (p *Probe) getTemp() (int64, error) {
 		temp = round(rawTemp)
 	}
 
-	if common.Debug {
-		p.log.Printf("[DEBUG] Got sensor data: %d °C\n",
-			temp)
-	}
+	// if common.Debug {
+	// 	p.log.Printf("[DEBUG] Got sensor data: %d °C\n",
+	// 		temp)
+	// }
 
 	return temp, nil
 } // func (p *Probe) getTemp() int64
