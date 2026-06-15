@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 13. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 13:38:17 krylon>
+// Time-stamp: <2026-06-15 13:54:59 krylon>
 
 //go:build linux
 
@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/blicero/hertz/common"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/ssimunic/gosensors"
 )
 
@@ -49,7 +50,7 @@ func (p *Probe) getTemp() (int64, error) {
 	}
 
 	for chip := range sens.Chips {
-		var match []string
+		var match [][]string
 
 		if chip != path[0] {
 			continue
@@ -57,14 +58,20 @@ func (p *Probe) getTemp() (int64, error) {
 			p.log.Printf("[ERROR] No data was found at %s\n",
 				TemperaturePath)
 			return invalidTemp, ErrInvalidPath
-		} else if match = tempPat.FindAllString(value, -1); match == nil {
+		} else if match = tempPat.FindAllStringSubmatch(value, -1); match == nil {
 			err = fmt.Errorf("cannot parse output from sensor: %s",
 				err.Error())
 			p.log.Printf("[ERROR] %s\n", err.Error())
 			return invalidTemp, err
-		} else if rawTemp, err = strconv.ParseFloat(match[1], 64); err != nil {
+		} else if len(match) < 1 {
+			err = fmt.Errorf("Cannot parse output from %s: %s",
+				TemperaturePath,
+				spew.Sdump(match))
+			p.log.Printf("[ERROR] %s\n", err.Error())
+			return invalidTemp, err
+		} else if rawTemp, err = strconv.ParseFloat(match[0][1], 64); err != nil {
 			p.log.Printf("[ERROR] Cannot parse floating point number %q: %s\n",
-				match[1],
+				match[0],
 				err.Error())
 			return invalidTemp, err
 		}
@@ -73,8 +80,8 @@ func (p *Probe) getTemp() (int64, error) {
 	}
 
 	if common.Debug {
-		p.log.Printf("[DEBUG] Got sensor data: %s\n",
-			sens)
+		p.log.Printf("[DEBUG] Got sensor data: %d °C\n",
+			temp)
 	}
 
 	return temp, nil
