@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-15 13:02:52 krylon>
+# Time-stamp: <2026-06-15 13:44:08 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -14,16 +14,16 @@
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-15 Mo 13:02]
+   #+CAPTION: Clock summary at [2026-06-15 Mo 13:44]
    | Headline                                          | Time       |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Total time*                                      | *1d 20:59* |            |      |      |      |
+   | *Total time*                                      | *1d 21:34* |            |      |      |      |
    |---------------------------------------------------+------------+------------+------+------+------|
-   | *Hertz [19/21]*                                   | *1d 20:59* |            |      |      |      |
-   | \_  /Components [17/18]/                          |            | /1d 20:25/ |      |      |      |
+   | *Hertz [19/21]*                                   | *1d 21:34* |            |      |      |      |
+   | \_  /Components [17/18]/                          |            | /1d 21:00/ |      |      |      |
    | \_    Data Model [0/0]                            |            |            | 6:55 |      |      |
-   | \_    Data Collection [0/1]                       |            |            | 5:45 |      |      |
-   | \_      Collect temperature as well               |            |            |      | 2:30 |      |
+   | \_    Data Collection [0/1]                       |            |            | 6:20 |      |      |
+   | \_      Collect temperature as well               |            |            |      | 3:05 |      |
    | \_    Database [9/9]                              |            |            | 7:15 |      |      |
    | \_      Add temperature                           |            |            |      | 0:12 |      |
    | \_      Back to SQLite? [3/3]                     |            |            |      | 0:56 |      |
@@ -79,6 +79,7 @@
     :END:
 **** TODO Collect temperature as well
      :LOGBOOK:
+     CLOCK: [2026-06-15 Mo 13:09]--[2026-06-15 Mo 13:44] =>  0:35
      CLOCK: [2026-06-15 Mo 11:59]--[2026-06-15 Mo 12:00] =>  0:01
      CLOCK: [2026-06-13 Sa 12:23]--[2026-06-13 Sa 14:52] =>  2:29
      :END:
