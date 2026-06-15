@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 01. 02. 2021 by Benjamin Walkenhorst
 // (c) 2021 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 13:04:17 krylon>
+// Time-stamp: <2026-06-15 13:45:35 krylon>
 
 //go:build ignore
 
@@ -229,7 +229,7 @@ This flag is not case-sensitive.`, strings.Join(orderedSteps, ", ")))
 		// os.Exit(0)
 	}
 
-	dbg.Printf("[DEBUG] orderedSteps = %s\n", orderedSteps)
+	// dbg.Printf("[DEBUG] orderedSteps = %s\n", orderedSteps)
 	for idx, s := range orderedSteps {
 		dbg.Printf("[TRACE] Do we run go %s? %t\n",
 			s,
