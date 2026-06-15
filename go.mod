@@ -3,8 +3,10 @@ module github.com/blicero/hertz
 go 1.26.2
 
 require (
+	github.com/BurntSushi/toml v1.6.0
 	github.com/Feralthedogg/go-functional v0.1.0
 	github.com/blicero/krylib v0.2.1
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/logutils v1.0.0
@@ -12,6 +14,7 @@ require (
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/schollz/peerdiscovery v1.7.6
 	github.com/sentenz/percent v1.0.0
+	github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b
 	github.com/wcharczuk/go-chart/v2 v2.1.2
 )
 
@@ -33,7 +36,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b // indirect
 	github.com/twmb/murmur3 v1.1.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect

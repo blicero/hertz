@@ -1,0 +1,14 @@
+# Time-stamp: <2026-06-15 12:52:47 krylon>
+
+[Global]
+Debug = false
+
+[Web]
+Address = "[::]:2342"
+
+[Collect]
+Temperature = ""
+
+[Collect.Interval]
+Collect = 30
+Transmit = 90

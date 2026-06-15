@@ -1,3 +1,5 @@
+github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk=
+github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/Feralthedogg/go-functional v0.1.0 h1:A9S7FtJy3emIrBq87NfMb1KMElC3LoJyiPmylUAyC4E=
 github.com/Feralthedogg/go-functional v0.1.0/go.mod h1:pJzfULjMAJoz1EH3BGqZzqt+3waH0+aPdD99T7oBUM8=
 github.com/Workiva/go-datastructures v1.1.5 h1:5YfhQ4ry7bZc2Mc7R0YZyYwpf5c6t1cEFvdAhd6Mkf4=
