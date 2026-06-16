@@ -620,6 +620,11 @@ func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
 			err.Error())
 		srv.log.Printf("[ERROR] %s\n", msg)
 		res.Message = msg
+		goto SEND
+	} else {
+		srv.log.Printf("[TRACE] Successfully stored %d Records from %s\n",
+			len(records),
+			name)
 	}
 
 	res.Status = true
