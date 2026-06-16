@@ -1,4 +1,4 @@
-# Time-stamp: <2026-06-15 12:52:47 krylon>
+# Time-stamp: <2026-06-16 13:37:05 krylon>
 
 [Global]
 Debug = false
@@ -12,3 +12,12 @@ Temperature = ""
 [Collect.Interval]
 Collect = 30
 Transmit = 90
+
+[Loglevel]
+Collect = "DEBUG"
+Database = "DEBUG"
+DBPool = "DEBUG"
+Monitor = "DEBUG"
+Web = "DEBUG"
+Discover = "DEBUG"
+Client = "DEBUG"

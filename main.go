@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-16 11:11:28 krylon>
+// Time-stamp: <2026-06-16 14:14:07 krylon>
 
 package main
 
@@ -18,8 +18,10 @@ import (
 	"github.com/blicero/hertz/common"
 	"github.com/blicero/hertz/config"
 	"github.com/blicero/hertz/discover"
+	"github.com/blicero/hertz/logdomain"
 	"github.com/blicero/hertz/monitor"
 	"github.com/blicero/hertz/web"
+	"github.com/hashicorp/logutils"
 )
 
 // XXX Set this to a more reasonable value after debugging is done!
@@ -61,6 +63,14 @@ func main() {
 			err.Error())
 		os.Exit(1)
 	}
+
+	common.PackageLevels[logdomain.Collect] = logutils.LogLevel(cfg.Loglevel.Collect)
+	common.PackageLevels[logdomain.Database] = logutils.LogLevel(cfg.Loglevel.Database)
+	common.PackageLevels[logdomain.DBPool] = logutils.LogLevel(cfg.Loglevel.DBPool)
+	common.PackageLevels[logdomain.Monitor] = logutils.LogLevel(cfg.Loglevel.Monitor)
+	common.PackageLevels[logdomain.Web] = logutils.LogLevel(cfg.Loglevel.Web)
+	common.PackageLevels[logdomain.Discover] = logutils.LogLevel(cfg.Loglevel.Discover)
+	common.PackageLevels[logdomain.Client] = logutils.LogLevel(cfg.Loglevel.Client)
 
 	webAddr = cfg.Web.Address
 	common.Debug = cfg.Global.Debug

@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 15. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 12:52:59 krylon>
+// Time-stamp: <2026-06-16 13:54:45 krylon>
 
 package config
 
@@ -31,6 +31,15 @@ func TestReadNoConfig(t *testing.T) {
 					Transmit: 60,
 				},
 			},
+			Loglevel: Loglevel{
+				Collect:  "DEBUG",
+				Database: "DEBUG",
+				DBPool:   "DEBUG",
+				Monitor:  "DEBUG",
+				Web:      "DEBUG",
+				Discover: "DEBUG",
+				Client:   "DEBUG",
+			},
 		}
 	)
 
@@ -45,7 +54,7 @@ func TestReadNoConfig(t *testing.T) {
 			spew.Sdump(&expect),
 			spew.Sdump(cfg))
 	}
-} // func TestReadConfig(t *testing.T)
+} // func TestReadNoConfig(t *testing.T)
 
 func TestReadExampleConfig(t *testing.T) {
 	const cfgPath = "testdata/test01.toml"
@@ -65,6 +74,15 @@ func TestReadExampleConfig(t *testing.T) {
 					Collect:  30,
 					Transmit: 90,
 				},
+			},
+			Loglevel: Loglevel{
+				Collect:  "DEBUG",
+				Database: "DEBUG",
+				DBPool:   "DEBUG",
+				Monitor:  "DEBUG",
+				Web:      "DEBUG",
+				Discover: "DEBUG",
+				Client:   "DEBUG",
 			},
 		}
 	)
