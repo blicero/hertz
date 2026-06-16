@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 30. 05. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-15 13:10:51 krylon>
+// Time-stamp: <2026-06-16 11:11:28 krylon>
 
 package main
 
@@ -62,8 +62,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	collectInterval = cfg.Collect.Interval.Collect
-	xmitInterval = cfg.Collect.Interval.Transmit
 	webAddr = cfg.Web.Address
 	common.Debug = cfg.Global.Debug
 	collect.TemperaturePath = cfg.Collect.Temperature
@@ -71,13 +69,13 @@ func main() {
 	flag.Int64Var(
 		&collectInterval,
 		"cinterval",
-		15,
+		cfg.Collect.Interval.Collect,
 		"Interval (in seconds) between data collections")
 
 	flag.Int64Var(
 		&xmitInterval,
 		"xinterval",
-		300,
+		cfg.Collect.Interval.Transmit,
 		"Interval (in seconds) between data transmissions",
 	)
 
