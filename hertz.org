@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-16 12:55:46 krylon>
+# Time-stamp: <2026-06-16 13:13:00 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,19 +7,19 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [24/26]
+* Hertz [25/26]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-16 Di 12:55]
+   #+CAPTION: Clock summary at [2026-06-16 Di 13:02]
    | Headline                                          | Time       |            |       |      |      |
    |---------------------------------------------------+------------+------------+-------+------+------|
    | *Total time*                                      | *1d 23:45* |            |       |      |      |
    |---------------------------------------------------+------------+------------+-------+------+------|
-   | *Hertz [24/26]*                                   | *1d 23:45* |            |       |      |      |
+   | *Hertz [25/26]*                                   | *1d 23:45* |            |       |      |      |
    | \_  /Components [22/23]/                          |            | /1d 23:11/ |       |      |      |
    | \_    Data Model [0/0]                            |            |            |  6:55 |      |      |
    | \_    Data Collection [4/4]                       |            |            |  7:53 |      |      |
@@ -326,12 +326,13 @@
     :END:
     I think I'm going to use TOML.
 **** TODO Make log levels configurable
-** Features [0/1]
+** Features [1/1]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
-*** TODO Collect temperature data as well?
+*** DONE Collect temperature data as well?
+    CLOSED: [2026-06-16 Di 13:02]
     In previous attempts, this was kind of wonky, because on some systems it
     is very ambiguous which temperature value I want.
     I think I should make this a configurable option.
