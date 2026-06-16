@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-16 11:02:14 krylon>
+// Time-stamp: <2026-06-16 12:52:18 krylon>
 
 package web
 
@@ -434,9 +434,10 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		len(records))
 
 	var (
-		values = make([]float64, len(records))
-		stride = max(10, len(records)/50)
-		maxY   int64
+		maxY    int64
+		maxTemp int64
+		values  = make([]float64, len(records))
+		stride  = max(10, len(records)/50)
 	)
 
 	for idx := range len(records) {
@@ -444,6 +445,8 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 			minidx = max(idx-stride, 0)
 			acc    int64
 		)
+
+		maxTemp = max(maxTemp, records[idx].Temperature)
 
 		for x := minidx; x <= idx; x++ {
 			var r = records[x]
@@ -467,13 +470,23 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 			ValueFormatter: chart.TimeValueFormatterWithFormat("02. 01. 15:04"),
 		},
 		YAxis: chart.YAxis{
+			Name: "Megahertz",
 			Range: &chart.ContinuousRange{
 				Min: 0.0,
 				Max: float64(maxY),
 			},
 		},
+		YAxisSecondary: chart.YAxis{
+			Name: "°C",
+			Range: &chart.ContinuousRange{
+				Min: 0.0,
+				Max: float64(maxTemp) * 1.1,
+			},
+		},
 		Series: []chart.Series{
 			chart.TimeSeries{
+				Name:  "Frequency",
+				YAxis: chart.YAxisPrimary,
 				XValues: functional.Map(
 					func(rec *model.Record) time.Time {
 						return rec.Timestamp
@@ -481,11 +494,25 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 					records),
 				YValues: values,
 			},
+			chart.TimeSeries{
+				Name:  "Temperature",
+				YAxis: chart.YAxisSecondary,
+				XValues: functional.Map(
+					func(rec *model.Record) time.Time {
+						return rec.Timestamp
+					},
+					records),
+				YValues: functional.Map(
+					func(rec *model.Record) float64 {
+						return float64(rec.Temperature)
+					},
+					records),
+			},
 		},
 	}
 
 	w.Header().Set("Content-Type", "image/png")
-	w.Header().Set("Cache-Control", cacheSeconds(600))
+	w.Header().Set("Cache-Control", noCache)
 	if err = pic.Render(chart.PNG, w); err != nil {
 		srv.log.Printf("[ERROR] Rendering chart for %s failed: %s\n",
 			hostname,
