@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 17:11:25 krylon>
+// Time-stamp: <2026-06-16 10:57:06 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -92,6 +92,11 @@ func (c *Client) run() {
 		timestamp              time.Time
 		liveTicker, xmitTicker *time.Ticker
 	)
+
+	c.log.Printf("[INFO] Transmitting data to %s every %s\n",
+		c.srv,
+		c.interval)
+	defer c.log.Println("[INFO] Client is quitting")
 
 	if timestamp, err = c.getTimestamp(); err != nil {
 		c.log.Printf("[ERROR] Failed to get timestamp from %s: %s\n",
@@ -217,6 +222,10 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		return t, err
 	}
 
+	c.log.Printf("[DEBUG] Transmitting %d Records to %s\n",
+		len(records),
+		c.srv)
+
 	recent = records[len(records)-1].Timestamp
 	buf = bytes.NewBuffer(serial)
 	endpoint = fmt.Sprintf("%s/ws/submit_data/%s",
@@ -261,9 +270,14 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 			err.Error())
 		return t, err
 	} else if reply.Payload != rstamp {
-		c.log.Printf("[ERROR] Unexpected Payload in response from server: %s (expected %s)\n",
+		err = fmt.Errorf("Unexpected Payload in response from server: %s (expected %s)",
 			reply.Payload,
 			rstamp)
+		c.log.Printf("[ERROR] %s\n", err.Error())
+		return t, err
+	} else {
+		c.log.Printf("[DEBUG] Server acknowledged receipt of data: %s\n",
+			reply.Message)
 	}
 
 	for _, f := range files {

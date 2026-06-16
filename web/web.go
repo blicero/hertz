@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 11:22:36 krylon>
+// Time-stamp: <2026-06-16 11:02:14 krylon>
 
 package web
 
@@ -577,6 +577,9 @@ func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Reque
 } // func (srv *Server) handleClientGetTimestamp(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
+	srv.log.Printf("[TRACE] Handling request for %s from %s\n",
+		r.RequestURI,
+		r.RemoteAddr)
 	var (
 		err       error
 		db        *database.Database
@@ -609,6 +612,10 @@ func (srv *Server) handleClientData(w http.ResponseWriter, r *http.Request) {
 		res.Message = msg
 		goto SEND
 	}
+
+	srv.log.Printf("[TRACE] Client %s submitted %d Records\n",
+		name,
+		len(records))
 
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
