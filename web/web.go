@@ -532,6 +532,10 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
+	pic.Elements = []chart.Renderable{
+		chart.Legend(&pic),
+	}
+
 	w.Header().Set("Content-Type", "image/png")
 	w.Header().Set("Cache-Control", noCache)
 	if err = pic.Render(chart.PNG, w); err != nil {
