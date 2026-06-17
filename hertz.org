@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-17 12:21:54 krylon>
+# Time-stamp: <2026-06-17 13:11:46 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,20 +7,20 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [28/29]
+* Hertz [28/30]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-17 Mi 12:21]
+   #+CAPTION: Clock summary at [2026-06-17 Mi 13:11]
    | Headline                                          | Time      |           |       |      |      |
    |---------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Total time*                                      | *2d 1:50* |           |       |      |      |
+   | *Total time*                                      | *2d 2:07* |           |       |      |      |
    |---------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Hertz [28/29]*                                   | *2d 1:50* |           |       |      |      |
-   | \_  /Components [25/25]/                          |           | /2d 1:16/ |       |      |      |
+   | *Hertz [28/30]*                                   | *2d 2:07* |           |       |      |      |
+   | \_  /Components [25/26]/                          |           | /2d 1:33/ |       |      |      |
    | \_    Data Model [0/0]                            |           |           |  6:55 |      |      |
    | \_    Data Collection [4/4]                       |           |           |  7:53 |      |      |
    | \_      Collect temperature as well               |           |           |       | 4:38 |      |
@@ -39,8 +39,9 @@
    | \_    Aggregate [1/1]                             |           |           |  9:16 |      |      |
    | \_      Client [1/1]                              |           |           |       | 9:16 |      |
    | \_        Delete spooled records once they are... |           |           |       |      | 1:10 |
-   | \_    Peer Discovery [1/1]                        |           |           |  1:53 |      |      |
+   | \_    Peer Discovery [1/2]                        |           |           |  2:10 |      |      |
    | \_      Allow server and monitor to coexist       |           |           |       | 0:20 |      |
+   | \_      Propagate settings centrally              |           |           |       | 0:17 |      |
    | \_    Web Interface [8/8]                         |           |           | 11:07 |      |      |
    | \_      Integrate temperature into chart          |           |           |       | 0:38 |      |
    | \_      Make temperature chart display...         |           |           |       | 0:49 |      |
@@ -59,7 +60,7 @@
    | \_    Unclutter the log                           |           |           |  0:21 |      |      |
    | \_    Panic in Database                           |           |           |  0:13 |      |      |
    #+END:
-** Components [25/25]
+** Components [25/26]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
@@ -220,7 +221,7 @@
       CLOCK: [2026-06-10 Mi 10:50]--[2026-06-10 Mi 11:20] =>  0:30
       CLOCK: [2026-06-09 Di 14:41]--[2026-06-09 Di 15:21] =>  0:40
       :END:
-*** Peer Discovery [1/1]
+*** Peer Discovery [1/2]
     :PROPERTIES:
     :COOKIE_DATA: todo recursive
     :VISIBILITY: all
@@ -234,6 +235,10 @@
      CLOSED: [2026-06-13 Sa 11:40]
      :LOGBOOK:
      CLOCK: [2026-06-13 Sa 11:20]--[2026-06-13 Sa 11:40] =>  0:20
+     :END:
+**** TODO Propagate settings centrally
+     :LOGBOOK:
+     CLOCK: [2026-06-17 Mi 12:54]--[2026-06-17 Mi 13:11] =>  0:17
      :END:
 *** Web Interface [8/8]
     :PROPERTIES:
@@ -349,6 +354,7 @@
    :VISIBILITY: all
    :END:
 *** MEDITATE Configure and propagate sample rate centrally?
+    Ideally, without stopping and restarting the process.
 *** DONE Collect temperature data as well?
     CLOSED: [2026-06-16 Di 13:02]
     In previous attempts, this was kind of wonky, because on some systems it
