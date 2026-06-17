@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-17 11:48:28 krylon>
+// Time-stamp: <2026-06-17 12:19:39 krylon>
 
 package web
 
@@ -301,7 +301,10 @@ func (srv *Server) handleHostsView(w http.ResponseWriter, r *http.Request) {
 func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) {
 	srv.log.Printf("[TRACE] Handling request for %s\n", r.RequestURI)
 
-	const tmplName = "host"
+	const (
+		tmplName      = "host"
+		defaultStride = 100
+	)
 	var (
 		err       error
 		tmpl      *template.Template
@@ -313,12 +316,30 @@ func (srv *Server) handleSingleHostView(w http.ResponseWriter, r *http.Request) 
 				Debug: common.Debug,
 				URL:   r.RequestURI,
 			},
+			Stride: defaultStride,
 		}
 	)
 
 	vars = mux.Vars(r)
 	name = vars["name"]
 	data.Title = name
+
+	if err = r.ParseForm(); err != nil {
+		msg = fmt.Sprintf("Cannot parse form/query data: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if strd := r.FormValue("stride"); strd != "" {
+		var s int64
+		if s, err = strconv.ParseInt(strd, 10, 64); err != nil {
+			srv.log.Printf("[ERROR] Cannot parse stride value %q: %s\n",
+				strd,
+				err.Error())
+		} else if s > 0 {
+			data.Stride = int(s)
+		}
+	}
 
 	db = srv.pool.Get()
 	defer srv.pool.Put(db)
@@ -396,7 +417,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		db            *database.Database
 		host          *model.Host
 		records       []*model.Record
-		stride        = 250 // max(10, len(records)/50)
+		stride        = 100 // max(10, len(records)/50)
 	)
 
 	vars = mux.Vars(r)
@@ -419,6 +440,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if s > 0 {
 			stride = int(s)
+			srv.log.Printf("[TRACE] Use stride of %d\n", stride)
 		}
 	}
 

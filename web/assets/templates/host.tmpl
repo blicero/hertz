@@ -1,6 +1,6 @@
 {{ define "host" }}
 {{/* Created on 11. 06. 2026 */}}
-{{/* Time-stamp: <2026-06-12 10:59:55 krylon> */}}
+{{/* Time-stamp: <2026-06-17 12:09:06 krylon> */}}
 <!DOCTYPE html>
 <html>
   {{ template "head" . }}
@@ -33,7 +33,7 @@
     </div>
 
     <div id="chart">
-      <img src="/host/{{ .Host.Name }}/chart" />
+      <img src="/host/{{ .Host.Name }}/chart?stride={{ .Stride }}" />
     </div>
 
     {{ template "footer" . }}

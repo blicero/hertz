@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 06. 05. 2020 by Benjamin Walkenhorst
 // (c) 2020 Benjamin Walkenhorst
-// Time-stamp: <2026-06-12 12:16:22 krylon>
+// Time-stamp: <2026-06-17 12:04:20 krylon>
 //
 // This file contains data structures to be passed to HTML templates.
 
@@ -32,4 +32,5 @@ type tmplDataSingleHost struct {
 	Records     []*model.Record
 	Histogram   map[int64]int64
 	HistPercent map[int64]float64
+	Stride      int
 }
