@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-16 10:57:06 krylon>
+// Time-stamp: <2026-06-17 11:51:01 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -222,7 +222,7 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		return t, err
 	}
 
-	c.log.Printf("[DEBUG] Transmitting %d Records to %s\n",
+	c.log.Printf("[TRACE] Transmitting %d Records to %s\n",
 		len(records),
 		c.srv)
 
@@ -276,7 +276,7 @@ func (c *Client) transmitData(t time.Time) (time.Time, error) {
 		c.log.Printf("[ERROR] %s\n", err.Error())
 		return t, err
 	} else {
-		c.log.Printf("[DEBUG] Server acknowledged receipt of data: %s\n",
+		c.log.Printf("[TRACE] Server acknowledged receipt of data: %s\n",
 			reply.Message)
 	}
 
