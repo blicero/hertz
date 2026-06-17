@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-13 11:30:47 krylon>
+// Time-stamp: <2026-06-17 13:10:53 krylon>
 
 // Package discover implements peer discovery for a networked environment.
 package discover
@@ -79,6 +79,10 @@ func (xp *Explorer) Shutdown() {
 	xp.lock.Unlock()
 	xp.active.Store(false)
 }
+
+// func (xp *Explorer) generatePayload() []byte {
+// 	return nil
+// } // func (xp *Explorer) generatePayload() []byte
 
 func (xp *Explorer) handleNewPeer(info peerdiscovery.Discovered) {
 	xp.lock.Lock()
