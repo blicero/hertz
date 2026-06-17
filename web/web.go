@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 03. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-16 12:52:18 krylon>
+// Time-stamp: <2026-06-17 11:48:28 krylon>
 
 package web
 
@@ -391,14 +391,36 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		err           error
 		vars          map[string]string
 		msg, hostname string
+		strideStr     string
 		begin, end    time.Time
 		db            *database.Database
 		host          *model.Host
 		records       []*model.Record
+		stride        = 250 // max(10, len(records)/50)
 	)
 
 	vars = mux.Vars(r)
 	hostname = vars["name"]
+
+	if err = r.ParseForm(); err != nil {
+		msg = fmt.Sprintf("Cannot parse form/query data: %s",
+			err.Error())
+		srv.log.Printf("[ERROR] %s\n", msg)
+		srv.sendErrorMessage(w, msg)
+		return
+	} else if strideStr = r.FormValue("stride"); strideStr != "" {
+		var s int64
+		if s, err = strconv.ParseInt(strideStr, 10, 64); err != nil {
+			msg = fmt.Sprintf("Cannot parse stride %q: %s",
+				strideStr,
+				err.Error())
+			srv.log.Printf("[ERROR] %s\n", msg)
+			srv.sendErrorMessage(w, msg)
+			return
+		} else if s > 0 {
+			stride = int(s)
+		}
+	}
 
 	end = time.Now()
 	begin = end.Add(time.Hour * -24)
@@ -434,19 +456,20 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 		len(records))
 
 	var (
-		maxY    int64
-		maxTemp int64
-		values  = make([]float64, len(records))
-		stride  = max(10, len(records)/50)
+		maxY       int64
+		maxTemp    int64
+		freqValues = make([]float64, len(records))
+		tempValues = make([]float64, len(records))
 	)
 
 	for idx := range len(records) {
 		var (
-			minidx = max(idx-stride, 0)
-			acc    int64
+			minidx                = max(idx-stride, 0)
+			freqAcc, tempAcc, div int64
 		)
 
 		maxTemp = max(maxTemp, records[idx].Temperature)
+		div = int64(max(min(idx, stride), 1))
 
 		for x := minidx; x <= idx; x++ {
 			var r = records[x]
@@ -454,12 +477,14 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 				func(a, b int64) int64 { return a + b },
 				0,
 				r.Freq)
-			acc += v
+			freqAcc += v
+			tempAcc += r.Temperature
 			maxY = max(maxY, v/int64(len(r.Freq)))
 		}
 
-		values[idx] = float64(acc /
-			int64(len(records[0].Freq)*max(idx-minidx, 1)))
+		freqValues[idx] = float64(freqAcc /
+			(div * int64(len(records[0].Freq))))
+		tempValues[idx] = float64(tempAcc / div)
 	}
 
 	var pic = chart.Chart{
@@ -492,7 +517,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 						return rec.Timestamp
 					},
 					records),
-				YValues: values,
+				YValues: freqValues,
 			},
 			chart.TimeSeries{
 				Name:  "Temperature",
@@ -502,11 +527,7 @@ func (srv *Server) handleHostChart(w http.ResponseWriter, r *http.Request) {
 						return rec.Timestamp
 					},
 					records),
-				YValues: functional.Map(
-					func(rec *model.Record) float64 {
-						return float64(rec.Temperature)
-					},
-					records),
+				YValues: tempValues,
 			},
 		},
 	}
