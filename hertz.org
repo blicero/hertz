@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-17 13:11:46 krylon>
+# Time-stamp: <2026-06-18 17:40:35 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -282,7 +282,11 @@
      :LOGBOOK:
      CLOCK: [2026-06-12 Fr 12:11]--[2026-06-12 Fr 12:28] =>  0:17
      :END:
-**** DONE Overview [0/0]
+**** DONE Overview [0/1]
+     :PROPERTIES:
+     :COOKIE_DATA: todo recursive
+     :VISIBILITY: all
+     :END:
      CLOSED: [2026-06-11 Do 13:18]
      :LOGBOOK:
      CLOCK: [2026-06-09 Di 12:06]--[2026-06-09 Di 12:20] =>  0:14
@@ -292,6 +296,7 @@
      Now that the preliminary stuff is done, I can finally look at the
      question that brought me here - how much time do my CPUs spend running at
      what frequency?
+***** TODO Use AJAX to refresh online status of Hosts
 **** DONE Analysis per Host [0/0]
      CLOSED: [2026-06-12 Fr 12:10]
      :PROPERTIES:
