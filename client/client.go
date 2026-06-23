@@ -2,7 +2,7 @@
 // -*- mode: go; coding: utf-8; -*-
 // Created on 05. 06. 2026 by Benjamin Walkenhorst
 // (c) 2026 Benjamin Walkenhorst
-// Time-stamp: <2026-06-17 11:51:01 krylon>
+// Time-stamp: <2026-06-23 19:59:31 krylon>
 
 // Package client handles communication with a Server.
 package client
@@ -299,6 +299,7 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 		dirh  *os.File
 		files []string
 		data  []*model.Record
+		now   = time.Now().Add(time.Second * -5)
 	)
 
 	if dirh, err = os.Open(common.SpoolDir); err != nil {
@@ -323,6 +324,7 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 		var (
 			path, tstr string
 			timestamp  int64
+			tm         time.Time
 			buf        []byte
 			rec        = new(model.Record)
 		)
@@ -333,7 +335,11 @@ func (c *Client) loadData(t time.Time) ([]*model.Record, []string, error) {
 				path,
 				err.Error())
 			return nil, nil, err
-		} else if time.Unix(timestamp, 0).Before(t) {
+		}
+
+		tm = time.Unix(timestamp, 0)
+
+		if tm.Before(t) || tm.After(now) {
 			continue
 		}
 
