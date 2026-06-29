@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2026-06-29 18:17:30 krylon>
+# Time-stamp: <2026-06-29 18:36:06 krylon>
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
 #+TAGS: optimize(o) refactor(r) cleanup(c)
@@ -7,19 +7,19 @@
 #+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
 #+PRIORITIES: A G D
 
-* Hertz [29/31]
+* Hertz [30/31]
   :PROPERTIES:
   :COOKIE_DATA: todo recursive
   :VISIBILITY: all
   :END:
 ** Clocktable
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2026-06-29 Mo 18:17]
+   #+CAPTION: Clock summary at [2026-06-29 Mo 18:36]
    | Headline                                          | Time      |           |       |      |      |
    |---------------------------------------------------+-----------+-----------+-------+------+------|
    | *Total time*                                      | *2d 2:07* |           |       |      |      |
    |---------------------------------------------------+-----------+-----------+-------+------+------|
-   | *Hertz [29/31]*                                   | *2d 2:07* |           |       |      |      |
+   | *Hertz [30/31]*                                   | *2d 2:07* |           |       |      |      |
    | \_  /Components [26/27]/                          |           | /2d 1:33/ |       |      |      |
    | \_    Data Model [0/0]                            |           |           |  6:55 |      |      |
    | \_    Data Collection [4/4]                       |           |           |  7:53 |      |      |
@@ -358,12 +358,13 @@
      :LOGBOOK:
      CLOCK: [2026-06-16 Di 13:14]--[2026-06-16 Di 14:25] =>  1:11
      :END:
-** Features [1/2]
+** Features [2/2]
    :PROPERTIES:
    :COOKIE_DATA: todo recursive
    :VISIBILITY: all
    :END:
-*** MEDITATE Configure and propagate sample rate centrally?
+*** CANCELLED Configure and propagate sample rate centrally?
+    CLOSED: [2026-06-29 Mo 18:35]
     Ideally, without stopping and restarting the process.
 *** DONE Collect temperature data as well?
     CLOSED: [2026-06-16 Di 13:02]
